@@ -13,7 +13,9 @@ buildNumber.properties
 **/.mvn
 **/mvnw
 **/mvnw.cmd
-**/target
+**/target/
+.idea
+
 
 ### STS ###
 .apt_generated

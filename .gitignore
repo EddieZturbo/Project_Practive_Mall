@@ -15,6 +15,7 @@ buildNumber.properties
 **/mvnw.cmd
 **/target/
 .idea
+**/.gitignore
 
 
 ### STS ###
@@ -27,7 +28,6 @@ buildNumber.properties
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
 *.iws
 *.iml
 *.ipr

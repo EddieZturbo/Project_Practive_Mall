@@ -21,6 +21,9 @@
         <module>Mall_Member</module>
         <module>Mall_Order</module>
         <module>Mall_Ware</module>
+        <module>renren-fast</module>
+        <module>renren-generator</module>
+        <module>Mall_Common</module>
     </modules>
 
 </project>

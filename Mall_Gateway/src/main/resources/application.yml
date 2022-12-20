@@ -1,0 +1,21 @@
+server:
+  port: 80
+spring:
+  application:
+    name: cloud-mall-gateway
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#      routes:
+#        - id: test_one
+#          uri: https://leetcode.cn
+#          predicates:
+#            - query=destination,leecode
+#        - id: test_two
+#          uri: https://github.com/
+#          predicates:
+#            - query=destination,github
+
+

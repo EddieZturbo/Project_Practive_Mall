@@ -9,28 +9,41 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Mall_Coupon" />
-        <module name="Mall_Order" />
+        <module name="Mall_Commons" />
         <module name="Mall_Goods" />
-        <module name="Mall_Ware" />
         <module name="Mall_Member" />
+        <module name="Mall_Common" />
+        <module name="renren-fast" />
+        <module name="Mall_Gateway" />
+        <module name="Mall_Order" />
+        <module name="Mall_Ware" />
+        <module name="renren-generator" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">
+      <module name="Mall_Common" target="8" />
       <module name="Mall_Coupon" target="1.8" />
+      <module name="Mall_Gateway" target="1.8" />
       <module name="Mall_Goods" target="1.8" />
       <module name="Mall_Member" target="1.8" />
       <module name="Mall_Order" target="1.8" />
       <module name="Mall_Ware" target="1.8" />
       <module name="Project_Practive_Mall" target="1.8" />
+      <module name="renren-fast" target="1.8" />
+      <module name="renren-generator" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Mall_Common" options="-parameters" />
       <module name="Mall_Coupon" options="-parameters" />
+      <module name="Mall_Gateway" options="-parameters" />
       <module name="Mall_Goods" options="-parameters" />
       <module name="Mall_Member" options="-parameters" />
       <module name="Mall_Order" options="-parameters" />
       <module name="Mall_Ware" options="-parameters" />
+      <module name="renren-fast" options="-parameters" />
+      <module name="renren-generator" options="-parameters" />
     </option>
   </component>
 </project>

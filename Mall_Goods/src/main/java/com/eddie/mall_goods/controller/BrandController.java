@@ -61,19 +61,19 @@ public class BrandController {
     @RequestMapping("/save")
     //@RequiresPermissions("mall_goods:brand:save")
     //TODO 要使后端的JSR303规范(注解方式)进行数据校验生效 必须在需要校验的参数上加上 @Validated注解 要想获取校验结果 必须紧跟BindingResult result对象
-    public R save(@Validated @RequestBody BrandEntity brand, BindingResult result) {
-        if (result.hasErrors()) {//判断校验是否有错误
-            HashMap<String, String> map = new HashMap<>();
-            result.getFieldErrors().forEach((item) -> {
-                String errorName = item.getField();//错误字段的name
-                String errorMessage = item.getDefaultMessage();//错误的message
-                map.put(errorName,errorMessage);
-            });
-            return R.error(400,"提交的数据不合法").put("data",map);
-        } else {
+    public R save(@Validated @RequestBody BrandEntity brand/*BindingResult result 去掉此参数即将不处理参数校验异常 抛出去给到全局处理 */) {
+//        if (result.hasErrors()) {//判断校验是否有错误
+//            HashMap<String, String> map = new HashMap<>();
+//            result.getFieldErrors().forEach((item) -> {
+//                String errorName = item.getField();//错误字段的name
+//                String errorMessage = item.getDefaultMessage();//错误的message
+//                map.put(errorName,errorMessage);
+//            });
+//            return R.error(400,"提交的数据不合法").put("data",map);
+//        } else {
             brandService.save(brand);
             return R.ok();
-        }
+//        }
     }
 
     /**
@@ -81,19 +81,19 @@ public class BrandController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("mall_goods:brand:update")
-    public R update(@Validated @RequestBody BrandEntity brand, BindingResult result) {
-        if (result.hasErrors()) {//判断校验是否有错误
-            HashMap<String, String> map = new HashMap<>();
-            result.getFieldErrors().forEach((item) -> {
-                String errorName = item.getField();//错误字段的name
-                String errorMessage = item.getDefaultMessage();//错误的message
-                map.put(errorName,errorMessage);
-            });
-            return R.error(400,"提交的数据不合法").put("data",map);
-        } else {
+    public R update(@Validated @RequestBody BrandEntity brand/*BindingResult result 去掉此参数即将不处理参数校验异常 抛出去给到全局处理 */) {
+//        if (result.hasErrors()) {//判断校验是否有错误
+//            HashMap<String, String> map = new HashMap<>();
+//            result.getFieldErrors().forEach((item) -> {
+//                String errorName = item.getField();//错误字段的name
+//                String errorMessage = item.getDefaultMessage();//错误的message
+//                map.put(errorName,errorMessage);
+//            });
+//            return R.error(400,"提交的数据不合法").put("data",map);
+//        } else {
             brandService.save(brand);
             return R.ok();
-        }
+//        }
     }
 
     /**

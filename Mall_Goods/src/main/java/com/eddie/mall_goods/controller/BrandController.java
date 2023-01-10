@@ -58,7 +58,7 @@ public class BrandController {
      */
     @RequestMapping("/save")
     //@RequiresPermissions("mall_goods:brand:save")
-    public R save(BrandEntity brand){
+    public R save(@RequestBody BrandEntity brand){
 		brandService.save(brand);
 
         return R.ok();

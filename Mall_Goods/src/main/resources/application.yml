@@ -25,7 +25,7 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-      # 逻辑删除配置
-      logic-delete-value: 1
-      logic-not-delete-value: 0
-      logic-delete-field: showStatus
+      # 逻辑删除配置 TODO 配置了逻辑删除的字段无法进行update操作 mybatis-plus不支持更新逻辑删除的字段
+#      logic-delete-value: 1
+#      logic-not-delete-value: 0
+#      logic-delete-field: showStatus

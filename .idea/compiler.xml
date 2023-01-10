@@ -20,8 +20,8 @@
         <module name="renren-generator" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="8">
-      <module name="Mall_Common" target="8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="Mall_Common" target="1.8" />
       <module name="Mall_Coupon" target="1.8" />
       <module name="Mall_Gateway" target="1.8" />
       <module name="Mall_Goods" target="1.8" />

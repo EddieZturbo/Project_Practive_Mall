@@ -25,6 +25,7 @@
         <module>renren-generator</module>
         <module>Mall_Common</module>
         <module>Mall_Gateway</module>
+        <module>Mall_Third-Party</module>
     </modules>
 
 </project>

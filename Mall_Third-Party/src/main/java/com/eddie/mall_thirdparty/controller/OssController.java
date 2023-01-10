@@ -61,7 +61,7 @@ public class OssController {
             String postSignature = ossClient.calculatePostSignature(postPolicy);
 
             respMap = new LinkedHashMap<String, String>();
-            respMap.put("accessid", accessId);
+            respMap.put("accessId", accessId);
             respMap.put("policy", encodedPolicy);
             respMap.put("signature", postSignature);
             respMap.put("dir", dir);

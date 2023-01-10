@@ -8,7 +8,7 @@ spring:
   datasource:
     username: root
     password: root
-    url: jdbc:mysql://192.168.199.151:3306/project_mall_pms
+    url: jdbc:mysql://192.168.199.181:3306/project_mall_pms
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss

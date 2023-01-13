@@ -10,9 +10,7 @@ import com.eddie.mall_goods.entity.CategoryEntity;
 import com.eddie.mall_goods.service.CategoryService;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -80,6 +78,32 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         //逻辑删除
         baseMapper.deleteBatchIds(asList);
+    }
+
+    /**
+     * 找到catelogId的完整路径
+     * [父id，儿id，孙id]
+     * @param catelogId
+     * @return
+     */
+    @Override
+    public Long[] findCatelogPath(Long catelogId) {
+        CategoryEntity category = this.getById(catelogId);
+        Long categoryCatId = category.getCatId();//获取当前分类节点的id
+        List<Long> path = new ArrayList<>();
+        //递归方式寻找当前节点父分类的id以及父分类节点的父分类的id...
+        List<Long> fullPath = findCatelogFatherPath(categoryCatId, path);
+        Collections.reverse(fullPath);
+        return (Long[]) fullPath.toArray(new Long[fullPath.size()]);
+    }
+
+    public List<Long> findCatelogFatherPath(Long catelogId, List<Long> path) {
+        path.add(catelogId);
+        Long parentCid = this.getById(catelogId).getParentCid();
+        if (0 != parentCid) {
+            findCatelogFatherPath(parentCid, path);
+        }
+        return path;
     }
 
 }

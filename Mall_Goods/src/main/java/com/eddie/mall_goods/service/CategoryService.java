@@ -21,5 +21,12 @@ public interface CategoryService extends IService<CategoryEntity> {
     List<CategoryEntity> listCategories();
 
     void logicDeleteByIds(List<Long> asList);
+    /**
+     * 找到catelogId的完整路径
+     * [父id，儿id，孙id]
+     * @param catelogId
+     * @return
+     */
+    Long[] findCatelogPath(Long catelogId);
 }
 

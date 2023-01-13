@@ -9,7 +9,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 
 /**
  * 商品三级分类
@@ -63,6 +66,7 @@ public class CategoryEntity implements Serializable {
 	private Integer productCount;
 
 	@TableField(exist = false)
+	//TODO 作为json数据返回时候 @JsonInclude可以指定是否包含此字段
+	@JsonInclude(NON_EMPTY/*指定不为空的情况下才将此字段转为json数据返回给客户端*/)
 	private List<CategoryEntity> childMenu;
-
 }

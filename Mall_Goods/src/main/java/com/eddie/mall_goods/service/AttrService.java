@@ -3,6 +3,7 @@ package com.eddie.mall_goods.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.mall_goods.entity.AttrEntity;
+import com.eddie.mall_goods.vo.AttrRespVo;
 import com.eddie.mall_goods.vo.AttrVo;
 
 import java.util.List;
@@ -30,5 +31,9 @@ public interface AttrService extends IService<AttrEntity> {
     List<AttrEntity> getRelationAttr(Long attrgroupId);
 
     PageUtils getNoRelationAttr(Map<String, Object> params, Long attrgroupId);
+
+    AttrRespVo getAttrInfo(Long attrId);
+
+    void updateAttr(AttrVo attr);
 }
 

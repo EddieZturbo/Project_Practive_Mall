@@ -30,22 +30,22 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Override
     public PageUtils queryPage(Map<String, Object> params, Long catelogId) {
+        String key = (String) params.get("key");
+        LambdaQueryWrapper<AttrGroupEntity> queryWrapper = new LambdaQueryWrapper<>();
+        //select * from pms_attr_group where catelogId = ? and (attr_group_id = ? or attr_group_name = ?)
+        if(!StringUtils.isEmpty(key)){//如果有key（额外的查询条件attr_group_id = ? or attr_group_name = ?）
+            queryWrapper.and((obj) -> {
+                obj.eq(AttrGroupEntity::getAttrGroupId,key)
+                        .or()
+                        .like(AttrGroupEntity::getAttrGroupName,key);
+            });
+        }
         if(catelogId == 0){
             //如果没有传递catelogId属性值 就默认使用AttrGroupServiceImpl.page()方法进行查询所有的分类
-            IPage<AttrGroupEntity> page = this.page(new Query<AttrGroupEntity>().getPage(params), new QueryWrapper<AttrGroupEntity>());
+            IPage<AttrGroupEntity> page = this.page(new Query<AttrGroupEntity>().getPage(params),queryWrapper);
             return new PageUtils(page);
         }else{
-            String key = (String) params.get("key");
-            LambdaQueryWrapper<AttrGroupEntity> queryWrapper = new LambdaQueryWrapper<>();
-            //select * from pms_attr_group where catelogId = ? and (attr_group_id = ? or attr_group_name = ?)
             queryWrapper.eq(AttrGroupEntity::getCatelogId,catelogId);
-            if(!StringUtils.isEmpty(key)){//如果有key（额外的查询条件attr_group_id = ? or attr_group_name = ?）
-                queryWrapper.and((obj) -> {
-                    obj.eq(AttrGroupEntity::getAttrGroupId,key)
-                            .or()
-                            .like(AttrGroupEntity::getAttrGroupName,key);
-                });
-            }
             IPage<AttrGroupEntity> page = this.page(new Query<AttrGroupEntity>().getPage(params),queryWrapper);
             return new PageUtils(page);
         }

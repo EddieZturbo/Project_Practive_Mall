@@ -1,15 +1,15 @@
 package com.eddie.mall_goods.controller;
 
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 
+import com.eddie.mall_goods.entity.AttrAttrgroupRelationEntity;
+import com.eddie.mall_goods.entity.AttrEntity;
+import com.eddie.mall_goods.service.AttrAttrgroupRelationService;
+import com.eddie.mall_goods.service.AttrService;
 import com.eddie.mall_goods.service.CategoryService;
+import com.eddie.mall_goods.vo.AttrGroupRelationVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.eddie.mall_goods.entity.AttrGroupEntity;
 import com.eddie.mall_goods.service.AttrGroupService;
@@ -33,6 +33,33 @@ public class AttrGroupController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    AttrService attrService;
+
+    @Autowired
+    AttrAttrgroupRelationService relationService;
+
+    @PostMapping("/attr/relation")
+    public R addRelation(@RequestBody List<AttrGroupRelationVo> attrGroupRelationVos){
+        relationService.saveBatch(attrGroupRelationVos);
+        return R.ok();
+    }
+
+    ///product/attrgroup/{attrgroupId}/attr/relation
+    @GetMapping("/{attrgroupId}/attr/relation")
+    public R attrRelation(@PathVariable("attrgroupId") Long attrgroupId){
+        List<AttrEntity> entities =  attrService.getRelationAttr(attrgroupId);
+        return R.ok().put("data",entities);
+    }
+
+    ///product/attrgroup/{attrgroupId}/noattr/relation
+    @GetMapping("/{attrgroupId}/noattr/relation")
+    public R attrNoRelation(@PathVariable("attrgroupId") Long attrgroupId,
+                            @RequestParam Map<String, Object> params){
+        PageUtils page = attrService.getNoRelationAttr(params,attrgroupId);
+        return R.ok().put("page",page);
+    }
 
     /**
      * 列表

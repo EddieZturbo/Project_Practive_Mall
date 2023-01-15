@@ -2,6 +2,7 @@ package com.eddie.mall_goods.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.eddie.common.constant.ProductConstant;
 import com.eddie.mall_goods.dao.AttrAttrgroupRelationDao;
 import com.eddie.mall_goods.dao.AttrGroupDao;
@@ -38,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements AttrService {
     @Autowired
     private AttrAttrgroupRelationDao attrAttrgroupRelationDao;
-
     @Autowired
     private AttrGroupDao attrGroupDao;
 
@@ -112,7 +112,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                         AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = attrAttrgroupRelationDao.selectOne(
                                 new LambdaQueryWrapper<AttrAttrgroupRelationEntity>()
                                         .eq(AttrAttrgroupRelationEntity::getAttrId, attrEntity.getAttrId()));
-                        if (null != attrAttrgroupRelationEntity) {
+                        if (null != attrAttrgroupRelationEntity && attrAttrgroupRelationEntity.getAttrGroupId() != null) {
                             AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrAttrgroupRelationEntity.getAttrGroupId());
                             log.info(attrGroupEntity.toString());
                             attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());//设置分组的name
@@ -169,32 +169,39 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         //1、当前分组只能关联自己所属的分类里面的所有属性
         AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrgroupId);
         Long catelogId = attrGroupEntity.getCatelogId();
+
         //2、当前分组只能关联别的分组没有引用的属性
         //2.1)、当前分类下的其他分组
-        List<AttrGroupEntity> group = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId));
-        List<Long> collect = group.stream().map(item -> {
-            return item.getAttrGroupId();
-        }).collect(Collectors.toList());
-
+        List<AttrGroupEntity> attrGroupEntities = attrGroupDao.selectList(
+                new LambdaQueryWrapper<AttrGroupEntity>().eq(AttrGroupEntity::getCatelogId, catelogId));
+        List<Long> attrGroupIds = attrGroupEntities.stream()
+                .map((item) -> {
+                    return item.getAttrGroupId();
+                })
+                .collect(Collectors.toList());
         //2.2)、这些分组关联的属性
-        List<AttrAttrgroupRelationEntity> groupId = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().in("attr_group_id", collect));
-        List<Long> attrIds = groupId.stream().map(item -> {
-            return item.getAttrId();
-        }).collect(Collectors.toList());
-
+        List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = attrAttrgroupRelationDao.selectList(
+                new LambdaQueryWrapper<AttrAttrgroupRelationEntity>().in(AttrAttrgroupRelationEntity::getAttrGroupId, attrGroupIds));
+        List<Long> attrIds = attrAttrgroupRelationEntities.stream()
+                .map((item) -> {
+                    return item.getAttrId();
+                })
+                .collect(Collectors.toList());
         //2.3)、从当前分类的所有属性中移除这些属性；
-        QueryWrapper<AttrEntity> wrapper = new QueryWrapper<AttrEntity>().eq("catelog_id", catelogId).eq("attr_type", ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
-        if (attrIds != null && attrIds.size() > 0) {
-            wrapper.notIn("attr_id", attrIds);
+        LambdaQueryWrapper<AttrEntity> lambdaQueryWrapper = new LambdaQueryWrapper<AttrEntity>().eq(AttrEntity::getCatelogId, catelogId)
+                .eq(AttrEntity::getAttrType, ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
+        if(attrIds != null && attrIds.size() > 0){
+            lambdaQueryWrapper.notIn(AttrEntity::getAttrId,attrIds);
         }
+        //判断是否有查询参数
         String key = (String) params.get("key");
-        if (!StringUtils.isEmpty(key)) {
-            wrapper.and((w) -> {
-                w.eq("attr_id", key).or().like("attr_name", key);
-            });
+        if(StringUtils.isNotEmpty(key)){
+            lambdaQueryWrapper.eq(AttrEntity::getAttrId,key)
+                    .or()
+                    .like(AttrEntity::getAttrName,key);
         }
-        IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), wrapper);
-
+        //返回分页数据
+        IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params),lambdaQueryWrapper);
         PageUtils pageUtils = new PageUtils(page);
 
         return pageUtils;

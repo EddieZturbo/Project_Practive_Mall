@@ -3,6 +3,7 @@ package com.eddie.mall_goods.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.mall_goods.entity.AttrEntity;
+import com.eddie.mall_goods.vo.AttrGroupRelationVo;
 import com.eddie.mall_goods.vo.AttrRespVo;
 import com.eddie.mall_goods.vo.AttrVo;
 
@@ -35,5 +36,7 @@ public interface AttrService extends IService<AttrEntity> {
     AttrRespVo getAttrInfo(Long attrId);
 
     void updateAttr(AttrVo attr);
+
+    void deleteRelation(List<AttrGroupRelationVo> vos);
 }
 

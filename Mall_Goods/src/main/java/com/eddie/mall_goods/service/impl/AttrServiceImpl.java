@@ -8,6 +8,7 @@ import com.eddie.mall_goods.dao.AttrGroupDao;
 import com.eddie.mall_goods.dao.CategoryDao;
 import com.eddie.mall_goods.entity.*;
 import com.eddie.mall_goods.service.CategoryService;
+import com.eddie.mall_goods.vo.AttrGroupRelationVo;
 import com.eddie.mall_goods.vo.AttrRespVo;
 import com.eddie.mall_goods.vo.AttrVo;
 import lombok.extern.slf4j.Slf4j;
@@ -141,7 +142,9 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
      */
     @Override
     public List<AttrEntity> getRelationAttr(Long attrgroupId) {
-        List<AttrAttrgroupRelationEntity> entities = attrAttrgroupRelationDao.selectList(new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id", attrgroupId));
+        List<AttrAttrgroupRelationEntity> entities = attrAttrgroupRelationDao.selectList(
+                new QueryWrapper<AttrAttrgroupRelationEntity>().eq("attr_group_id"
+                        , attrgroupId));
 
         List<Long> attrIds = entities.stream().map((attr) -> {
             return attr.getAttrId();
@@ -254,6 +257,19 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         }
 
 
+    }
+
+    @Override
+    public void deleteRelation(List<AttrGroupRelationVo> vos) {
+        List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities = vos.stream()
+                .map((item) -> {
+                    AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = new AttrGroupRelationVo();
+                    BeanUtils.copyProperties(item, attrAttrgroupRelationEntity);
+                    return attrAttrgroupRelationEntity;
+                })
+                .collect(Collectors.toList());
+        log.info(attrAttrgroupRelationEntities.toString());
+        attrAttrgroupRelationDao.deleteBatchRelation(attrAttrgroupRelationEntities);
     }
 
 }

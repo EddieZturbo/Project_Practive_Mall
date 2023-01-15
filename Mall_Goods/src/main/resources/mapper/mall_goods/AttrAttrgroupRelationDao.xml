@@ -3,13 +3,24 @@
 
 <mapper namespace="com.eddie.mall_goods.dao.AttrAttrgroupRelationDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.eddie.mall_goods.entity.AttrAttrgroupRelationEntity" id="attrAttrgroupRelationMap">
         <result property="id" column="id"/>
         <result property="attrId" column="attr_id"/>
         <result property="attrGroupId" column="attr_group_id"/>
         <result property="attrSort" column="attr_sort"/>
     </resultMap>
+
+    <!--void deleteBatchRelation(List<AttrAttrgroupRelationEntity> attrAttrgroupRelationEntities);-->
+    <!--Delete From `pms_attr_attrgroup_relation` WHERE (attr_id = ? AND attr_group_id = ?) OR (attr_id = ? attr_group_id = ?)...-->
+    <delete id="deleteBatchRelation">
+        DELETE FROM `pms_attr_attrgroup_relation` WHERE
+        <foreach collection="attrAttrgroupRelationEntities" item="attrAttrgroupRelationEntity" separator=" OR ">
+            (attr_Id = #{attrAttrgroupRelationEntity.attrId}
+                 AND
+             attr_group_id = #{attrAttrgroupRelationEntity.attrGroupId})
+        </foreach>
+    </delete>
 
 
 </mapper>

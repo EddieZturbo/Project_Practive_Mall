@@ -8,6 +8,7 @@ import com.eddie.mall_goods.service.AttrAttrgroupRelationService;
 import com.eddie.mall_goods.service.AttrService;
 import com.eddie.mall_goods.service.CategoryService;
 import com.eddie.mall_goods.vo.AttrGroupRelationVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,7 @@ import com.eddie.common.utils.R;
  */
 @RestController
 @RequestMapping("mall_goods/attrgroup")
+@Slf4j
 public class AttrGroupController {
     @Autowired
     private AttrGroupService attrGroupService;
@@ -52,6 +54,15 @@ public class AttrGroupController {
         List<AttrEntity> entities =  attrService.getRelationAttr(attrgroupId);
         return R.ok().put("data",entities);
     }
+
+    ///mall_goods/attrgroup/attr/relation/delete
+    @PostMapping("/attr/relation/delete")
+    public R deleteAttrRelation(@RequestBody List<AttrGroupRelationVo> vos){
+        log.info(vos.toString());
+        attrService.deleteRelation(vos);
+        return R.ok();
+    }
+
 
     ///product/attrgroup/{attrgroupId}/noattr/relation
     @GetMapping("/{attrgroupId}/noattr/relation")

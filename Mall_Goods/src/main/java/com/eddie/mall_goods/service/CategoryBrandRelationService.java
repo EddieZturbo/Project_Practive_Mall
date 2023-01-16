@@ -20,5 +20,14 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
     PageUtils queryPage(Map<String, Object> params);
 
     List<BrandEntity> getBrandsByCatId(Long catId);
+
+    /**
+     * 根据前端传来的{"brandId":7,"catelogId":225} 查询出相应的name 一同save至pms_category_brand_relation表中
+     * @param categoryBrandRelation
+     */
+    void saveWithName(CategoryBrandRelationEntity categoryBrandRelation);
+
+
+    void updateBrand(Long brandId, String name);
 }
 

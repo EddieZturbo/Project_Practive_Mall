@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.eddie.mall_goods.entity.BrandEntity;
 import com.eddie.mall_goods.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,18 @@ public class CategoryBrandRelationController {
     }
 
     /**
+     * 获取当前品牌关联的所有分类列表
+     */
+    @GetMapping("/catelog/list")
+    public R cateloglist(@RequestParam("brandId")Long brandId){
+        List<CategoryBrandRelationEntity> categoryBrandRelationEntities = categoryBrandRelationService.list(
+                new LambdaQueryWrapper<CategoryBrandRelationEntity>().eq(CategoryBrandRelationEntity::getBrandId,brandId));
+
+
+        return R.ok().put("data", categoryBrandRelationEntities);
+    }
+
+    /**
      * 列表
      */
     @RequestMapping("/list")
@@ -82,8 +96,7 @@ public class CategoryBrandRelationController {
     @RequestMapping("/save")
     //@RequiresPermissions("mall_goods:categorybrandrelation:save")
     public R save(@RequestBody CategoryBrandRelationEntity categoryBrandRelation){
-		categoryBrandRelationService.save(categoryBrandRelation);
-
+		categoryBrandRelationService.saveWithName(categoryBrandRelation);
         return R.ok();
     }
 

@@ -8,11 +8,7 @@ import java.util.stream.Collectors;
 import com.eddie.mall_goods.entity.BrandEntity;
 import com.eddie.mall_goods.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.eddie.mall_goods.entity.CategoryBrandRelationEntity;
 import com.eddie.mall_goods.service.CategoryBrandRelationService;
@@ -34,9 +30,6 @@ public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
 
-
-    ///mall_goods/categorybrandrelation/brands/list
-
     /**
      * TODO ①controller层：处理请求 接收和校验数据
      * ②service层就收controller层传来的数据 进行业务逻辑处理
@@ -44,10 +37,11 @@ public class CategoryBrandRelationController {
      * @param catId
      * @return
      */
-    public R relationBrandList(@RequestParam(value = "catId",required = true) Long catId){
-        List<BrandEntity> brandVo = categoryBrandRelationService.getBrandsByCatId(catId);
+    @GetMapping("/brands/list")
+    public R relationBrandList(@RequestParam(value = "catId") Long catId){
+        List<BrandEntity> brandEntities = categoryBrandRelationService.getBrandsByCatId(catId);
 
-        List<BrandVo> brandVos = brandVo.stream()
+        List<BrandVo> brandVos = brandEntities.stream()
                 .map((item) -> {
                     BrandVo vo = new BrandVo();
                     vo.setBrandName(item.getName());

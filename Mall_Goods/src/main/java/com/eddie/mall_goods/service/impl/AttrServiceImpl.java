@@ -1,13 +1,22 @@
 package com.eddie.mall_goods.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.eddie.common.constant.ProductConstant;
+import com.eddie.common.utils.PageUtils;
+import com.eddie.common.utils.Query;
 import com.eddie.mall_goods.dao.AttrAttrgroupRelationDao;
+import com.eddie.mall_goods.dao.AttrDao;
 import com.eddie.mall_goods.dao.AttrGroupDao;
 import com.eddie.mall_goods.dao.CategoryDao;
-import com.eddie.mall_goods.entity.*;
+import com.eddie.mall_goods.entity.AttrAttrgroupRelationEntity;
+import com.eddie.mall_goods.entity.AttrEntity;
+import com.eddie.mall_goods.entity.AttrGroupEntity;
+import com.eddie.mall_goods.entity.CategoryEntity;
+import com.eddie.mall_goods.service.AttrService;
 import com.eddie.mall_goods.service.CategoryService;
 import com.eddie.mall_goods.vo.AttrGroupRelationVo;
 import com.eddie.mall_goods.vo.AttrRespVo;
@@ -17,21 +26,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.eddie.common.utils.PageUtils;
-import com.eddie.common.utils.Query;
-
-import com.eddie.mall_goods.dao.AttrDao;
-import com.eddie.mall_goods.service.AttrService;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("attrService")
@@ -53,7 +53,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<AttrEntity> page = this.page(
                 new Query<AttrEntity>().getPage(params),
-                new QueryWrapper<AttrEntity>()
+                new QueryWrapper<>()
         );
 
         return new PageUtils(page);

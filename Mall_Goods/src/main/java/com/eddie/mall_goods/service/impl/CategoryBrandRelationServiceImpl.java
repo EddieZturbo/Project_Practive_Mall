@@ -1,6 +1,9 @@
 package com.eddie.mall_goods.service.impl;
 
+import com.eddie.mall_goods.entity.BrandEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -25,5 +28,11 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
 
         return new PageUtils(page);
     }
+
+    @Override
+    public List<BrandEntity> getBrandsByCatId(Long catId) {
+        return null;
+    }
+
 
 }

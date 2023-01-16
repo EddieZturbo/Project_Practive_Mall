@@ -1,8 +1,12 @@
 package com.eddie.mall_goods.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.eddie.mall_goods.entity.BrandEntity;
+import com.eddie.mall_goods.vo.BrandVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +33,31 @@ import com.eddie.common.utils.R;
 public class CategoryBrandRelationController {
     @Autowired
     private CategoryBrandRelationService categoryBrandRelationService;
+
+
+    ///mall_goods/categorybrandrelation/brands/list
+
+    /**
+     * TODO ①controller层：处理请求 接收和校验数据
+     * ②service层就收controller层传来的数据 进行业务逻辑处理
+     * ③controller接收service处理完的数据 封装成页面指定的VO
+     * @param catId
+     * @return
+     */
+    public R relationBrandList(@RequestParam(value = "catId",required = true) Long catId){
+        List<BrandEntity> brandVo = categoryBrandRelationService.getBrandsByCatId(catId);
+
+        List<BrandVo> brandVos = brandVo.stream()
+                .map((item) -> {
+                    BrandVo vo = new BrandVo();
+                    vo.setBrandName(item.getName());
+                    vo.setBrandId(item.getBrandId());
+                    return vo;
+                })
+                .collect(Collectors.toList());
+        return R.ok().put("data",brandVos);
+
+    }
 
     /**
      * 列表

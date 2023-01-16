@@ -36,7 +36,6 @@ public class AttrAttrgroupRelationController {
     //@RequiresPermissions("mall_goods:attrattrgrouprelation:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = attrAttrgroupRelationService.queryPage(params);
-
         return R.ok().put("page", page);
     }
 
@@ -48,7 +47,6 @@ public class AttrAttrgroupRelationController {
     //@RequiresPermissions("mall_goods:attrattrgrouprelation:info")
     public R info(@PathVariable("id") Long id){
 		AttrAttrgroupRelationEntity attrAttrgroupRelation = attrAttrgroupRelationService.getById(id);
-
         return R.ok().put("attrAttrgroupRelation", attrAttrgroupRelation);
     }
 
@@ -59,7 +57,6 @@ public class AttrAttrgroupRelationController {
     //@RequiresPermissions("mall_goods:attrattrgrouprelation:save")
     public R save(@RequestBody AttrAttrgroupRelationEntity attrAttrgroupRelation){
 		attrAttrgroupRelationService.save(attrAttrgroupRelation);
-
         return R.ok();
     }
 

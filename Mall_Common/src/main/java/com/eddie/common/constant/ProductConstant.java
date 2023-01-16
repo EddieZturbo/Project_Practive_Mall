@@ -1,7 +1,5 @@
 package com.eddie.common.constant;
 
-import lombok.Data;
-
 public class ProductConstant {
 
 

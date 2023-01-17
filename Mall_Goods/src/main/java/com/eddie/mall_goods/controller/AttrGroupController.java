@@ -8,6 +8,7 @@ import com.eddie.mall_goods.service.AttrAttrgroupRelationService;
 import com.eddie.mall_goods.service.AttrService;
 import com.eddie.mall_goods.service.CategoryService;
 import com.eddie.mall_goods.vo.AttrGroupRelationVo;
+import com.eddie.mall_goods.vo.AttrGroupWithAttrsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,13 @@ public class AttrGroupController {
 
     @Autowired
     AttrAttrgroupRelationService relationService;
+
+    @GetMapping("/{catelogId}/withattr")
+    public R getAttrGroupWithAttrs(@PathVariable("catelogId") Long catelogId){
+        List<AttrGroupWithAttrsVo> attrGroupWithAttrsVos = attrGroupService.getAttrGroupWithAttrsByCatelogId(catelogId);
+        return R.ok().put("data",attrGroupWithAttrsVos);
+    }
+
 
     @PostMapping("/attr/relation")
     public R addRelation(@RequestBody List<AttrGroupRelationVo> attrGroupRelationVos){

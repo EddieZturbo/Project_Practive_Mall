@@ -2,7 +2,7 @@ server:
   port: 12000
 logging:
   level:
-    com.atguigu.gulimall: debug
+    com.eddie.mall_coupon: debug
 
 spring:
   datasource:

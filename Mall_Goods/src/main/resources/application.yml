@@ -1,31 +1,37 @@
-server:
-  port: 8000
-logging:
-  level:
-    com.eddie.mall_goods: debug
+#server:
+#  port: 8000
+#logging:
+#  level:
+#    com.eddie.mall_goods: debug
+#
+#spring:
+#  datasource:
+#    username: root
+#    password: root
+#    url: jdbc:mysql://192.168.199.181:3306/project_mall_pms
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#  application:
+#    name: cloud-mall-goods
+#  cloud:
+#    nacos:
+#      discovery:
+#        server-addr: localhost:8848
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000 #连接超时
+        readTimeout: 5000 #读取超时
 
-spring:
-  datasource:
-    username: root
-    password: root
-    url: jdbc:mysql://192.168.199.181:3306/project_mall_pms
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-  application:
-    name: cloud-mall-goods
-  cloud:
-    nacos:
-      discovery:
-        server-addr: localhost:8848
-
-mybatis-plus:
-  type-aliases-package: com.eddie.mall_goods.entity
-  mapper-locations: classpath:mapper/**/*.xml
-  global-config:
-    db-config:
-      id-type: auto
-      # 逻辑删除配置 TODO 配置了逻辑删除的字段无法进行update操作 mybatis-plus不支持更新逻辑删除的字段
+#mybatis-plus:
+#  type-aliases-package: com.eddie.mall_goods.entity
+#  mapper-locations: classpath:mapper/**/*.xml
+#  global-config:
+#    db-config:
+#      id-type: auto
+#       逻辑删除配置 TODO 配置了逻辑删除的字段无法进行update操作 mybatis-plus不支持更新逻辑删除的字段
 #      logic-delete-value: 1
 #      logic-not-delete-value: 0
 #      logic-delete-field: showStatus

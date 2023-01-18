@@ -104,7 +104,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         List<AttrRespVo> attrRespVoResult = records.stream()
                 .map((attrEntity) -> {
                     AttrRespVo attrRespVo = new AttrRespVo();
-                    BeanUtils.copyProperties(attrEntity, attrRespVo);
+                    BeanUtils.copyProperties(attrEntity, attrRespVo);//TODO 属性copy 属性名一定要相同才会进行copy
                     log.info("attrEntity.getAttrId()\t" + attrEntity.getAttrId().toString());
 
                     //设置分组的名字

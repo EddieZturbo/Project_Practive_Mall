@@ -4,6 +4,7 @@ package com.eddie.mall_goods.vo;
 import lombok.Data;
 
 @Data
+//TODO Vo实体类 对应的前端需要的数据 可以使用JSON工具将前端的JSON数据生成Vo实体类
 public class AttrVo {
     /**
      * 属性id

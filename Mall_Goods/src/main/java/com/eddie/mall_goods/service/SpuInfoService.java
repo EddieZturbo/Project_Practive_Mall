@@ -2,7 +2,9 @@ package com.eddie.mall_goods.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.eddie.common.utils.PageUtils;
+import com.eddie.mall_goods.entity.SpuInfoDescEntity;
 import com.eddie.mall_goods.entity.SpuInfoEntity;
+import com.eddie.mall_goods.vo.SpuSaveVo;
 
 import java.util.Map;
 
@@ -16,5 +18,8 @@ import java.util.Map;
 public interface SpuInfoService extends IService<SpuInfoEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveSpuInfo(SpuSaveVo spuSaveVo);
+
 }
 

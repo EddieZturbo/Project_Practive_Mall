@@ -1,5 +1,6 @@
 package com.eddie.mall_goods.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
@@ -22,7 +23,8 @@ public class SpuInfoDescEntity implements Serializable {
 	/**
 	 * 商品id
 	 */
-	@TableId
+	@TableId(type = IdType.INPUT)
+	//TODO 表中的主键id字段不是auto_increment因此设置IdType.INPUT该类型可以通过自己注册自动填充插件进行填充
 	private Long spuId;
 	/**
 	 * 商品介绍

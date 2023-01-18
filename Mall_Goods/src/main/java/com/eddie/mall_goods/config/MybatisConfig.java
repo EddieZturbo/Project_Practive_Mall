@@ -1,7 +1,6 @@
 package com.eddie.mall_goods.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

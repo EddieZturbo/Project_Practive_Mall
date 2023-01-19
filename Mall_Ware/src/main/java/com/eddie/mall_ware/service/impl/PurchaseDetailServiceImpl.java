@@ -1,7 +1,11 @@
 package com.eddie.mall_ware.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,9 +22,28 @@ public class PurchaseDetailServiceImpl extends ServiceImpl<PurchaseDetailDao, Pu
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        LambdaQueryWrapper<PurchaseDetailEntity> purchaseDetailEntityLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        String key = (String) params.get("key");
+        if (StringUtils.isNotEmpty(key)) {
+            purchaseDetailEntityLambdaQueryWrapper.and(w -> {
+                w.eq(PurchaseDetailEntity::getPurchaseId, key)
+                        .or()
+                        .eq(PurchaseDetailEntity::getSkuId, key);
+            });
+
+        }
+        String status = (String) params.get("status");
+        if (StringUtils.isNotEmpty(status)) {
+            purchaseDetailEntityLambdaQueryWrapper.eq(PurchaseDetailEntity::getStatus,status);
+        }
+        String wareId = (String) params.get("wareId");
+        if (StringUtils.isNotEmpty(wareId)) {
+            purchaseDetailEntityLambdaQueryWrapper.eq(PurchaseDetailEntity::getWareId,wareId);
+        }
+
         IPage<PurchaseDetailEntity> page = this.page(
                 new Query<PurchaseDetailEntity>().getPage(params),
-                new QueryWrapper<PurchaseDetailEntity>()
+                purchaseDetailEntityLambdaQueryWrapper
         );
 
         return new PageUtils(page);

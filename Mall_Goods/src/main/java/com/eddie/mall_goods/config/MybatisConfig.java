@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan("com.eddie.mall_goods.controller")
+@MapperScan("com.eddie.mall_coupon.controller")
 public class MybatisConfig {
     /**
      * TODO 配置分页插件Interceptor

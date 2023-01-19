@@ -12,18 +12,19 @@
 #    driver-class-name: com.mysql.cj.jdbc.Driver
 #  jackson:
 #    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
 #  application:
 #    name: cloud-mall-goods
 #  cloud:
 #    nacos:
 #      discovery:
 #        server-addr: localhost:8848
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 5000 #连接超时
-        readTimeout: 5000 #读取超时
+#feign:
+#  client:
+#    config:
+#      default:
+#        connectTimeout: 5000 #连接超时
+#        readTimeout: 5000 #读取超时
 
 #mybatis-plus:
 #  type-aliases-package: com.eddie.mall_goods.entity

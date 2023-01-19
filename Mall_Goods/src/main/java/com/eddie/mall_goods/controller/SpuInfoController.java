@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.eddie.mall_goods.vo.SpuSaveVo;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,8 +38,7 @@ public class SpuInfoController {
     @RequestMapping("/list")
     //@RequiresPermissions("mall_goods:spuinfo:list")
     public R list(@RequestParam Map<String, Object> params){
-        PageUtils page = spuInfoService.queryPage(params);
-
+        PageUtils page = spuInfoService.queryPageByCondition(params);
         return R.ok().put("page", page);
     }
 

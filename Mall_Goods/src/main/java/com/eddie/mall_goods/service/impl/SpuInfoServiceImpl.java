@@ -1,5 +1,6 @@
 package com.eddie.mall_goods.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.eddie.common.to.SkuReductionTo;
 import com.eddie.common.to.SpuBoundTo;
 import com.eddie.common.utils.R;
@@ -177,6 +178,36 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 }
             });
         }
+    }
+
+    @Override
+    public PageUtils queryPageByCondition(Map<String, Object> params) {
+        LambdaQueryWrapper<SpuInfoEntity> spuInfoEntityLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        String key = (String) params.get("key");//获取检索关键字key
+        if(StringUtils.isNotEmpty(key)){
+            spuInfoEntityLambdaQueryWrapper.and(w -> {//相当于and(id = id or name = name)
+                w.eq(SpuInfoEntity::getId,key)
+                        .or()
+                        .like(SpuInfoEntity::getSpuName,key);
+            });
+        }
+        String status = (String) params.get("status");
+        if(StringUtils.isNotEmpty(status)){
+            spuInfoEntityLambdaQueryWrapper.eq(SpuInfoEntity::getPublishStatus,status);
+        }
+        String brandId = (String) params.get("brandId");
+        if(StringUtils.isNotEmpty(brandId) && !"0".equalsIgnoreCase(brandId)){
+            spuInfoEntityLambdaQueryWrapper.eq(SpuInfoEntity::getBrandId,brandId);
+        }
+        String catelogId = (String) params.get("catelogId");
+        if(StringUtils.isNotEmpty(brandId) && !"0".equalsIgnoreCase(catelogId)){
+            spuInfoEntityLambdaQueryWrapper.eq(SpuInfoEntity::getCatalogId,catelogId);
+        }
+        IPage<SpuInfoEntity> page = this.page(
+                new Query<SpuInfoEntity>().getPage(params),
+                spuInfoEntityLambdaQueryWrapper
+        );
+        return new PageUtils(page);
     }
 
 }

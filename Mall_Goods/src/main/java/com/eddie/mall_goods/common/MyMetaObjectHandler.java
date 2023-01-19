@@ -4,11 +4,7 @@ import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
-
-import java.sql.Time;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 
 /**
  *  //TODO Mybatis提供的公共字段自动填充接口 --元数据对象处理器
@@ -22,8 +18,8 @@ import java.util.Date;
 public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
-        metaObject.setValue("createTime", new Date());
-        metaObject.setValue("updateTime", new Date());
+        metaObject.setValue("createTime", LocalDateTime.now());
+        metaObject.setValue("updateTime", LocalDateTime.now());
         log.info("公共字段属性(createTime&updateTime)自动填充");
 
     }

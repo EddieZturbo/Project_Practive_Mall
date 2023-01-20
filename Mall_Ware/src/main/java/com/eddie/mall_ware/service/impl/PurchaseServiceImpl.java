@@ -4,10 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.eddie.common.constant.WareConstant;
 import com.eddie.mall_ware.entity.PurchaseDetailEntity;
 import com.eddie.mall_ware.service.PurchaseDetailService;
+import com.eddie.mall_ware.service.WareSkuService;
 import com.eddie.mall_ware.vo.MergeVo;
+import com.eddie.mall_ware.vo.PurchaseDoneVo;
+import com.eddie.mall_ware.vo.PurchaseItemDoneVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +33,9 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
     @Autowired
     PurchaseDetailService purchaseDetailService;
+
+    @Autowired
+    WareSkuService wareSkuService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -70,9 +77,14 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
         }
         //合并至采购单中
-        //TODO 判断是正确的状态才能进行merge
         List<Long> mergeVoItems = mergeVo.getItems();
         Long finalPurchaseId = purchaseId;
+        //TODO 判断是正确的状态才能进行merge
+        PurchaseEntity purchaseEntity = this.getById(finalPurchaseId);
+        if(WareConstant.PurchaseStatusEnum.CREATED.getCode() != purchaseEntity.getStatus() ||
+                WareConstant.PurchaseStatusEnum.ASSIGNED.getCode() != purchaseEntity.getStatus()){
+            throw new RuntimeException("此采购单的状态目前以及无法进行合并");
+        }
         List<PurchaseDetailEntity> purchaseDetailEntities = mergeVoItems.stream()
                 .map(item -> {
                     PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();//修改采购需求实体类
@@ -142,6 +154,42 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
                     .collect(Collectors.toList());
             purchaseDetailService.updateBatchById(UpdatePurchaseDetailEntities);
         });
+
+    }
+
+    @Override
+    @Transactional
+    public void done(PurchaseDoneVo doneVo) {
+        Long id = doneVo.getId();//采购单id
+
+        List<PurchaseDetailEntity> updates = new ArrayList<>();//创建一个List集合用来接收操作后的PurchaseDetailEntity
+        //1)改变采购项的状态
+        boolean flag = true;//记录采购的状态的标识
+        List<PurchaseItemDoneVo> purchaseItemDoneVos = doneVo.getItems();//所有前端传来的采购项的信息
+        for (PurchaseItemDoneVo p : purchaseItemDoneVos) {
+            PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();
+            if(p.getStatus() == WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode()){
+                flag = false;//若采购的状态为采购失败则将采购的状态标识置为false
+                purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode());
+            }else{
+                //2)采购成功则进行入库操作
+                purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.FINISH.getCode());//设置采购的状态为已完成
+                wareSkuService.addStock(purchaseDetailEntity.getSkuId(),purchaseDetailEntity.getWareId(),purchaseDetailEntity.getSkuNum());
+            }
+            purchaseDetailEntity.setId(p.getItemId());
+            updates.add(purchaseDetailEntity);
+        }
+        purchaseDetailService.updateBatchById(updates);
+
+
+        //3)改变采购单的状态
+        PurchaseEntity purchaseEntity = new PurchaseEntity();
+        purchaseEntity.setId(id);
+        //根据采购的状态的标识flag来对采购单的status进行设置
+        purchaseEntity.setStatus(flag?WareConstant.PurchaseDetailStatusEnum.FINISH.getCode():WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode());
+        this.updateById(purchaseEntity);
+
+
 
     }
 

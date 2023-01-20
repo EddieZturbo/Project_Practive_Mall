@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.eddie.mall_ware.vo.MergeVo;
+import com.eddie.mall_ware.vo.PurchaseDoneVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,19 @@ import com.eddie.common.utils.R;
 public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
+
+    /**
+     * 完成采购
+     * @param doneVo
+     * @return
+     */
+    @PostMapping("/done")
+    public R finish(@RequestBody PurchaseDoneVo doneVo){
+
+        purchaseService.done(doneVo);
+
+        return R.ok();
+    }
 
     /**
      * 领取采购单

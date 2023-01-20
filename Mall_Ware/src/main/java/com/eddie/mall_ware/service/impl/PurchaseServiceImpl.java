@@ -81,16 +81,14 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         Long finalPurchaseId = purchaseId;
         //TODO 判断是正确的状态才能进行merge
         PurchaseEntity purchaseEntity = this.getById(finalPurchaseId);
-        if(WareConstant.PurchaseStatusEnum.CREATED.getCode() != purchaseEntity.getStatus() ||
-                WareConstant.PurchaseStatusEnum.ASSIGNED.getCode() != purchaseEntity.getStatus()){
-            throw new RuntimeException("此采购单的状态目前以及无法进行合并");
-        }
-        List<PurchaseDetailEntity> purchaseDetailEntities = mergeVoItems.stream()
-                .map(item -> {
-                    PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();//修改采购需求实体类
-                    purchaseDetailEntity.setId(item);
-                    purchaseDetailEntity.setPurchaseId(finalPurchaseId);
-                    /*TODO lambda 表达式只能引用标记了 final 的外层局部变量，这就是说不能在 lambda 内部修改定义在域外的局部变量，否则会编译错误*/
+        if (WareConstant.PurchaseStatusEnum.CREATED.getCode() == purchaseEntity.getStatus() ||
+                WareConstant.PurchaseStatusEnum.ASSIGNED.getCode() == purchaseEntity.getStatus()) {
+            List<PurchaseDetailEntity> purchaseDetailEntities = mergeVoItems.stream()
+                    .map(item -> {
+                        PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();//修改采购需求实体类
+                        purchaseDetailEntity.setId(item);
+                        purchaseDetailEntity.setPurchaseId(finalPurchaseId);
+                        /*TODO lambda 表达式只能引用标记了 final 的外层局部变量，这就是说不能在 lambda 内部修改定义在域外的局部变量，否则会编译错误*/
                         /*在lambda表达式中对变量的操作都是基于原变量的副本，不会影响到原变量的值。
                         假定没有要求lambda表达式外部变量为final修饰，那么开发者会误以为外部变量的值能够在lambda表达式中被改变，而这实际是不可能的，
                         所以要求外部变量为final是在编译期以强制手段确保用户不会在lambda表达式中做修改原变量值的操作
@@ -106,11 +104,14 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
                         其实复制变量的方式会造一个数据不一致的问题，在执行方法的时候局部变量的值改变了却无法通知匿名内部类的变量，
                         随着程序的运行，就会导致程序运行的结果与预期不同，于是使用final修饰这个变量，使它成为一个常量，这样就保证了数据的一致性
                         */
-                    purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.ASSIGNED.getCode());//设置状态为已分配
-                    return purchaseDetailEntity;
-                })
-                .collect(Collectors.toList());
-        purchaseDetailService.updateBatchById(purchaseDetailEntities);//进行批量update
+                        purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.ASSIGNED.getCode());//设置状态为已分配
+                        return purchaseDetailEntity;
+                    })
+                    .collect(Collectors.toList());
+            purchaseDetailService.updateBatchById(purchaseDetailEntities);//进行批量update
+        } else {
+            throw new RuntimeException("此采购单的状态目前以及无法进行合并");
+        }
 
 
     }
@@ -166,15 +167,17 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         //1)改变采购项的状态
         boolean flag = true;//记录采购的状态的标识
         List<PurchaseItemDoneVo> purchaseItemDoneVos = doneVo.getItems();//所有前端传来的采购项的信息
+
         for (PurchaseItemDoneVo p : purchaseItemDoneVos) {
             PurchaseDetailEntity purchaseDetailEntity = new PurchaseDetailEntity();
-            if(p.getStatus() == WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode()){
+            if (p.getStatus() == WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode()) {
                 flag = false;//若采购的状态为采购失败则将采购的状态标识置为false
                 purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode());
-            }else{
+            } else {
                 //2)采购成功则进行入库操作
                 purchaseDetailEntity.setStatus(WareConstant.PurchaseDetailStatusEnum.FINISH.getCode());//设置采购的状态为已完成
-                wareSkuService.addStock(purchaseDetailEntity.getSkuId(),purchaseDetailEntity.getWareId(),purchaseDetailEntity.getSkuNum());
+                PurchaseDetailEntity entity = purchaseDetailService.getById(p.getItemId());
+                wareSkuService.addStock(entity.getSkuId(), entity.getWareId(), entity.getSkuNum());
             }
             purchaseDetailEntity.setId(p.getItemId());
             updates.add(purchaseDetailEntity);
@@ -186,9 +189,8 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
         PurchaseEntity purchaseEntity = new PurchaseEntity();
         purchaseEntity.setId(id);
         //根据采购的状态的标识flag来对采购单的status进行设置
-        purchaseEntity.setStatus(flag?WareConstant.PurchaseDetailStatusEnum.FINISH.getCode():WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode());
+        purchaseEntity.setStatus(flag ? WareConstant.PurchaseDetailStatusEnum.FINISH.getCode() : WareConstant.PurchaseDetailStatusEnum.HASERROR.getCode());
         this.updateById(purchaseEntity);
-
 
 
     }

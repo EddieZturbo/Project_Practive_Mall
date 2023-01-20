@@ -1,8 +1,11 @@
 package com.eddie.mall_goods.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.eddie.mall_goods.entity.ProductAttrValueEntity;
+import com.eddie.mall_goods.service.ProductAttrValueService;
 import com.eddie.mall_goods.vo.AttrRespVo;
 import com.eddie.mall_goods.vo.AttrVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,19 @@ import com.eddie.common.utils.R;
 @RequestMapping("mall_goods/attr")
 public class AttrController {
     @Autowired
+    ProductAttrValueService productAttrValueService;
+
+    @Autowired
     private AttrService attrService;
+
+    // /product/attr/base/listforspu/{spuId}
+    @GetMapping("/base/listforspu/{spuId}")
+    public R baseAttrlistforspu(@PathVariable("spuId") Long spuId){
+
+        List<ProductAttrValueEntity> entities = productAttrValueService.baseAttrlistforspu(spuId);
+
+        return R.ok().put("data",entities);
+    }
 
 
     @GetMapping("/{attrType}/list/{catelogId}")
@@ -79,6 +94,16 @@ public class AttrController {
     //@RequiresPermissions("mall_goods:attr:update")
     public R update(@RequestBody AttrVo attrVo){
 		attrService.updateAttr(attrVo);
+        return R.ok();
+    }
+
+    ///product/attr/update/{spuId}
+    @PostMapping("/update/{spuId}")
+    public R updateSpuAttr(@PathVariable("spuId") Long spuId,
+                           @RequestBody List<ProductAttrValueEntity> entities){
+
+        productAttrValueService.updateSpuAttr(spuId,entities);
+
         return R.ok();
     }
 

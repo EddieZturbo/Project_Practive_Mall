@@ -3,6 +3,7 @@ package com.eddie.mall_goods.exception;
 import com.eddie.common.exception.BizCodeEnum;
 import com.eddie.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,7 +21,6 @@ import java.util.HashMap;
 @Slf4j
 @RestControllerAdvice(basePackages = {"com.eddie.mall_goods.controller"})//指定要进行统一异常处理的controller所在包
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(value = MethodArgumentNotValidException.class)//指定要进行处理的异常类型
     public R validationExceptionHandle(MethodArgumentNotValidException e) {
         log.error("错误：{}", e.toString());

@@ -1,6 +1,7 @@
 package com.eddie.mall_ware.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.eddie.mall_ware.vo.MergeVo;
@@ -26,6 +27,17 @@ import com.eddie.common.utils.R;
 public class PurchaseController {
     @Autowired
     private PurchaseService purchaseService;
+
+    /**
+     * 领取采购单
+     * @param ids
+     * @return
+     */
+    @PostMapping("/received")
+    public R received(@RequestBody List<Long> ids){
+        purchaseService.receive(ids);
+        return R.ok();
+    }
 
     /**
      * 查询未生成和未分配的采购单

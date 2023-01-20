@@ -5,6 +5,7 @@ import com.eddie.common.utils.PageUtils;
 import com.eddie.mall_ware.entity.PurchaseEntity;
 import com.eddie.mall_ware.vo.MergeVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,5 +22,7 @@ public interface PurchaseService extends IService<PurchaseEntity> {
     PageUtils queryPageUnReceiveList(Map<String, Object> params);
 
     void mergePurchase(MergeVo mergeVo);
+
+    void receive(List<Long> ids);
 }
 

@@ -70,6 +70,7 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
 
         }
         //合并至采购单中
+        //TODO 判断是正确的状态才能进行merge
         List<Long> mergeVoItems = mergeVo.getItems();
         Long finalPurchaseId = purchaseId;
         List<PurchaseDetailEntity> purchaseDetailEntities = mergeVoItems.stream()
@@ -99,6 +100,48 @@ public class PurchaseServiceImpl extends ServiceImpl<PurchaseDao, PurchaseEntity
                 .collect(Collectors.toList());
         purchaseDetailService.updateBatchById(purchaseDetailEntities);//进行批量update
 
+
+    }
+
+    @Override
+    @Transactional
+    public void receive(List<Long> ids) {
+        //确定当前的采购单是新建或者已分配状态的
+        List<PurchaseEntity> purchaseEntities = ids.stream()
+                .map(id -> {
+                    PurchaseEntity purchaseEntity = this.getById(id);
+                    return purchaseEntity;
+                })
+                .filter(item -> {//使用filter进行状态的判断并进行过滤
+                    if (item.getStatus() == WareConstant.PurchaseStatusEnum.CREATED.getCode() ||
+                            item.getStatus() == WareConstant.PurchaseStatusEnum.ASSIGNED.getCode()) {
+                        return true;
+                    }
+                    return false;
+                })
+                .map(purchaseEntity -> {//将采购单的状态set为已领取
+                    purchaseEntity.setStatus(WareConstant.PurchaseStatusEnum.RECEIVE.getCode());
+                    return purchaseEntity;//返回过滤以及处理好状态的采购单对象
+                })
+                .collect(Collectors.toList());
+
+        //改变采购单的状态
+        this.updateBatchById(purchaseEntities);
+
+        //改变采购项的状态
+        purchaseEntities.forEach(item -> {
+            List<PurchaseDetailEntity> PurchaseDetailEntities = purchaseDetailService.listDetailByPurchaseId(item.getId());
+
+            List<PurchaseDetailEntity> UpdatePurchaseDetailEntities = PurchaseDetailEntities.stream()
+                    .map(purchaseDetailEntity -> {
+                        PurchaseDetailEntity purchaseDetailEntity1 = new PurchaseDetailEntity();
+                        purchaseDetailEntity1.setId(purchaseDetailEntity.getId());
+                        purchaseDetailEntity1.setStatus(WareConstant.PurchaseDetailStatusEnum.BUYING.getCode());//修改为正在采购的状态
+                        return purchaseDetailEntity1;
+                    })
+                    .collect(Collectors.toList());
+            purchaseDetailService.updateBatchById(UpdatePurchaseDetailEntities);
+        });
 
     }
 

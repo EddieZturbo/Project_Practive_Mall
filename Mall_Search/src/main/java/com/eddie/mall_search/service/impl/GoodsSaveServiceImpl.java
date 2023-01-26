@@ -5,7 +5,6 @@ import com.eddie.common.es.SkuEsModel;
 import com.eddie.mall_search.config.ElasticSearchConfig;
 import com.eddie.mall_search.constant.ESConstant;
 import com.eddie.mall_search.service.GoodsSaveService;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequest;

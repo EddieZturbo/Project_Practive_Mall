@@ -279,4 +279,9 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         attrAttrgroupRelationDao.deleteBatchRelation(attrAttrgroupRelationEntities);
     }
 
+    @Override
+    public List<Long> searchAttrIds(List<Long> attrIds) {
+        return baseMapper.searchAttrIds(attrIds);
+    }
+
 }

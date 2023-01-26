@@ -1,6 +1,7 @@
 package com.eddie.mall_search.config;
 
 import org.apache.http.HttpHost;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
@@ -21,5 +22,14 @@ public class ElasticSearchConfig {
                 )
         );
         return restHighLevelClient;
+    }
+
+    /**
+     * 配置常规操作
+     */
+    public static final RequestOptions COMMON_OPTIONS;
+    static {
+        RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder();
+        COMMON_OPTIONS = builder.build();
     }
 }

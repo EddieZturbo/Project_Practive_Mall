@@ -1,9 +1,11 @@
 package com.eddie.mall_ware.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.eddie.common.to.SkuHasStockTo;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.mall_ware.entity.WareSkuEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,5 +22,7 @@ public interface WareSkuService extends IService<WareSkuEntity> {
     void addStock(Long skuId, Long wareId, Integer skuNum);
 
     void appendStock(Long skuId, Long wareId, Integer skuNum);
+
+    List<SkuHasStockTo> skuHasStock(List<Long> skuIds);
 }
 

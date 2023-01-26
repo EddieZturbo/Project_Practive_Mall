@@ -16,5 +16,11 @@
         <result property="updateTime" column="update_time"/>
     </resultMap>
 
+    <!--void updateSpuPublicStatus(@Param("spuId") Long spuId, @Param("code") int code);-->
+    <!--update `pms_spu_info` set publish_status = ?,update_time = NOW() where id = ?-->
+    <update id="updateSpuPublicStatus">
+        update `pms_spu_info` set publish_status = #{code},update_time = NOW() where id = #{spuId}
+    </update>
+
 
 </mapper>

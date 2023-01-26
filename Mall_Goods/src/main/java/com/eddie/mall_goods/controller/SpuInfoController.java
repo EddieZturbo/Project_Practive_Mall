@@ -6,11 +6,7 @@ import java.util.Map;
 import com.eddie.mall_goods.vo.SpuSaveVo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.eddie.mall_goods.entity.SpuInfoEntity;
 import com.eddie.mall_goods.service.SpuInfoService;
@@ -31,6 +27,19 @@ import com.eddie.common.utils.R;
 public class SpuInfoController {
     @Autowired
     private SpuInfoService spuInfoService;
+
+
+    //mall_goods/spuinfo/{spuId}}/up
+    /**
+     * 商品上架
+     * @param spuId
+     * @return
+     */
+    @PostMapping("/{spuId}/up")
+    public R supUp(@PathVariable("spuId") Long spuId){
+        spuInfoService.up(spuId);
+        return R.ok();
+    }
 
     /**
      * 列表

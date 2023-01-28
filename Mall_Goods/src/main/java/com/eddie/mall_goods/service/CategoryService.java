@@ -3,6 +3,7 @@ package com.eddie.mall_goods.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.mall_goods.entity.CategoryEntity;
+import com.eddie.mall_goods.vo.Catalog2Vo;
 
 import java.util.List;
 import java.util.Map;
@@ -28,5 +29,9 @@ public interface CategoryService extends IService<CategoryEntity> {
      * @return
      */
     Long[] findCatelogPath(Long catelogId);
+
+    List<CategoryEntity> getLevel1Categories();
+
+    Map<String,List<Catalog2Vo>> getCatalogJson();
 }
 

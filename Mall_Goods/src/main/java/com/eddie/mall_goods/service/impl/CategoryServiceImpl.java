@@ -109,18 +109,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Override
     public Map<String, List<Catalog2Vo>> getCatalogJson() {
-        //1、查出所有分类
+        //1、TODO 查出所有分类(只需要查询一次数据库 将三级分类的数据全部查询出来 抽取出一个公共的方法 进行二级分类&三级分类菜单的查询)
+        List<CategoryEntity> categoryEntityList = this.list(null);//查出三级分类菜单
+
         //1、1）查出所有一级分类
         List<CategoryEntity> level1Categories = getLevel1Categories();
+
 
         //封装数据
         Map<String, List<Catalog2Vo>> parentCid = level1Categories.stream().collect(Collectors.toMap(
                 k -> k.getCatId().toString(),
                 v -> {
             //1、每一个的一级分类,查到这个一级分类的二级分类
-            List<CategoryEntity> level2Catalog = this.list(
-                    new LambdaQueryWrapper<CategoryEntity>()
-                            .eq(CategoryEntity::getParentCid,v.getCatId()));
+            List<CategoryEntity> level2Catalog = getChildLevelCatalog(categoryEntityList,v);
 
             //2、封装上面的结果
             List<Catalog2Vo> catalog2Vos = null;
@@ -129,9 +130,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                     Catalog2Vo catalog2Vo = new Catalog2Vo(v.getCatId().toString(), null, l2.getCatId().toString(), l2.getName().toString());
 
                     //1、找当前二级分类的三级分类封装成vo
-                    List<CategoryEntity> level3Catalog = this.list(
-                            new LambdaQueryWrapper<CategoryEntity>()
-                            .eq(CategoryEntity::getParentCid,l2.getCatId()));
+                    List<CategoryEntity> level3Catalog = getChildLevelCatalog(categoryEntityList,l2);
 
                     if (level3Catalog != null) {
                         List<Catalog2Vo.Catalog3Vo> catalog3Vos = level3Catalog.stream().map(l3 -> {
@@ -152,6 +151,19 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         return parentCid;
 
+    }
+
+    /**
+     * TODO 抽取的方法 根据查询出来的三级分类数据 通过stream的形式过滤出 二级分类&三级分类
+     * @param categoryEntities
+     * @param currentCategory
+     * @return
+     */
+    private List<CategoryEntity> getChildLevelCatalog(List<CategoryEntity> categoryEntities,CategoryEntity currentCategory) {
+        List<CategoryEntity> categoryEntityList = categoryEntities.stream()
+                .filter(item -> item.getParentCid().equals(currentCategory.getCatId()))
+                .collect(Collectors.toList());
+        return categoryEntityList;
     }
 
     public List<Long> findCatelogFatherPath(Long catelogId, List<Long> path) {

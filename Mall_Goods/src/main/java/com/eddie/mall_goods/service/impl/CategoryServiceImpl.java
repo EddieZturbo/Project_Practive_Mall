@@ -14,6 +14,8 @@ import com.eddie.mall_goods.service.CategoryService;
 import com.eddie.mall_goods.vo.Catalog2Vo;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -30,6 +32,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -125,7 +130,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         Object jsonFromRedis = redisTemplate.opsForValue().get("catalogJson");
         if (null == jsonFromRedis) {//缓存中没有数据
             //2）若缓存中没有则从数据库中获取数据 获取到数据后将数据缓存到redis中
-            Map<String, List<Catalog2Vo>> catalogJsonFromDB = getCatalogJsonFromDBWithRedisLock();//从数据库中获取数据
+            Map<String, List<Catalog2Vo>> catalogJsonFromDB = getCatalogJsonFromDBWithRedissonLock();//从数据库中获取数据
             if (null == catalogJsonFromDB) {//数据库中也查询不到
                 //TODO 处理缓存穿透问题
                 //缓存一个空对象 60s有效
@@ -151,6 +156,33 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 new TypeReference<Map<String, List<Catalog2Vo>>>() {
                 });
         return catalogJson;
+    }
+
+    /**
+     * 从数据库中获取数据 TODO 使用Redisson
+     * TODO 缓存中的数据和数据库中的数据保存数据一致性？(缓存多数应用在读多写少的业务情况下)
+     * 1）双写模式(在数据库中进行了写操作 同时同步写到缓存中)
+     * 2）失效模式(在数据库中进行了写操作 将缓存中的数据及时的进行删除 下次进行查询就从数据库中获取最新的数据)
+     * 以上方法并发情况下仍然无法完全解决数据一致性问题
+     *
+     * 可以使用读写锁(读读情况下相当于无锁)
+     * 使用canal（alibaba的解决缓存数据一致性的工具 canal将自己伪装成mysql的从库 实时将binlog中的写操作更新执行到redis中）订阅数据库的binlog
+     *
+     * @return
+     */
+    public Map<String, List<Catalog2Vo>> getCatalogJsonFromDBWithRedissonLock(){
+        RLock lock = redissonClient.getLock("catalogJson-lock");//指定分布式锁的名字 锁的名字觉得锁的粒度
+        lock.lock();//加锁
+        log.info("使用Redisson 加锁成功");
+        Map<String, List<Catalog2Vo>> catalogJsonFromDB;
+        try {
+            catalogJsonFromDB = getCatalogJsonFromDB();//执行查库业务代码
+        } finally {
+            lock.unlock();//解锁
+            log.info("使用Redisson 解锁");
+        }
+        return catalogJsonFromDB;
+
     }
 
     /**

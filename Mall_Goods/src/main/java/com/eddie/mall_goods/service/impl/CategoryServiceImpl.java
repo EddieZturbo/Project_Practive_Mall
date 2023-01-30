@@ -12,6 +12,7 @@ import com.eddie.mall_goods.dao.CategoryDao;
 import com.eddie.mall_goods.entity.CategoryEntity;
 import com.eddie.mall_goods.service.CategoryService;
 import com.eddie.mall_goods.vo.Catalog2Vo;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -130,17 +131,15 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 log.info("缓存击穿");
                 redisTemplate.opsForValue().set("catalogJson", "null", 60, TimeUnit.MINUTES);
             }
-            log.info("从数据库中获取到数据");
-            redisTemplate.opsForValue().set("catalogJson", catalogJsonFromDB, 30, TimeUnit.MINUTES);//缓存到redis中 30分钟失效
-            log.info("将数据缓存到redis中");
+            //TODO 将查询到的数据缓存到redis中 在查库操作方法中进行 要确保在synchronized锁中进行
             return catalogJsonFromDB;//返回从数据库中查询到的数据
         }
 
         //如果缓存中查询到的是"null" 则表明缓存击穿
         String toJSONString = JSON.toJSONString(jsonFromRedis);
-        if("null".equals(toJSONString)){
+        if ("null".equals(toJSONString)) {
             Map<String, List<Catalog2Vo>> nullValue = new HashMap<>();
-            nullValue.put("null",null);
+            nullValue.put("null", null);
             return nullValue;//返回空对象
         }
 
@@ -158,55 +157,75 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @return
      */
     public Map<String, List<Catalog2Vo>> getCatalogJsonFromDB() {
-        //1、TODO 查出所有分类(只需要查询一次数据库 将三级分类的数据全部查询出来 抽取出一个公共的方法 进行二级分类&三级分类菜单的查询)
-        List<CategoryEntity> categoryEntityList = this.list(null);//查出三级分类菜单
 
-        //1、1）查出所有一级分类
-        List<CategoryEntity> level1Categories = getLevel1Categories();
+        //TODO 分布式情况下本地锁无法满足 要使用分布式锁 后续会进行优化
+        synchronized (this) {//TODO 加本地锁解决缓存穿透问题 给查询数据库的操作加上synchronized锁 锁对象使用this（SpringBoot所有容器组件都是单例的）
+
+            //TODO 后续的线程拿到锁后要查看是否前面的线程已经将数据查询到并缓存到redis中
+            Object jsonFromRedis = redisTemplate.opsForValue().get("catalogJson");
+            if (null != jsonFromRedis) {//若redis中已经缓存了数据则直接返回数据 不用进行后续的数据库查询操作
+                log.info("从缓存中获取到数据");
+                String toJSONString = JSON.toJSONString(jsonFromRedis);
+                Map<String, List<Catalog2Vo>> catalogJson = JSON.parseObject(
+                        toJSONString,
+                        new TypeReference<Map<String, List<Catalog2Vo>>>() {
+                        });
+                return catalogJson;
+            }
+            log.info("从数据库中获取到数据");
+
+            //1、TODO 查出所有分类(只需要查询一次数据库 将三级分类的数据全部查询出来 抽取出一个公共的方法 进行二级分类&三级分类菜单的查询)
+            List<CategoryEntity> categoryEntityList = this.list(null);//查出三级分类菜单
+
+            //1、1）查出所有一级分类
+            List<CategoryEntity> level1Categories = getLevel1Categories();
 
 
-        //封装数据
-        Map<String, List<Catalog2Vo>> parentCid = level1Categories.stream().collect(Collectors.toMap(
-                k -> k.getCatId().toString(),
-                v -> {
-                    //1、每一个的一级分类,查到这个一级分类的二级分类
-                    List<CategoryEntity> level2Catalog = getChildLevelCatalog(categoryEntityList, v);
+            //封装数据
+            Map<String, List<Catalog2Vo>> parentCid = level1Categories.stream().collect(Collectors.toMap(
+                    k -> k.getCatId().toString(),
+                    v -> {
+                        //1、每一个的一级分类,查到这个一级分类的二级分类
+                        List<CategoryEntity> level2Catalog = getChildLevelCatalog(categoryEntityList, v);
 
-                    //2、封装上面的结果
-                    List<Catalog2Vo> catalog2Vos = null;
-                    if (level2Catalog != null) {
-                        catalog2Vos = level2Catalog.stream().map(l2 -> {
-                            Catalog2Vo catalog2Vo = new Catalog2Vo(
-                                    v.getCatId().toString()
-                                    , null
-                                    , l2.getCatId().toString()
-                                    , l2.getName().toString());
+                        //2、封装上面的结果
+                        List<Catalog2Vo> catalog2Vos = null;
+                        if (level2Catalog != null) {
+                            catalog2Vos = level2Catalog.stream().map(l2 -> {
+                                Catalog2Vo catalog2Vo = new Catalog2Vo(
+                                        v.getCatId().toString()
+                                        , null
+                                        , l2.getCatId().toString()
+                                        , l2.getName().toString());
 
-                            //1、找当前二级分类的三级分类封装成vo
-                            List<CategoryEntity> level3Catalog = getChildLevelCatalog(categoryEntityList, l2);
+                                //1、找当前二级分类的三级分类封装成vo
+                                List<CategoryEntity> level3Catalog = getChildLevelCatalog(categoryEntityList, l2);
 
-                            if (level3Catalog != null) {
-                                List<Catalog2Vo.Catalog3Vo> catalog3Vos = level3Catalog.stream().map(l3 -> {
-                                    //2、封装成指定格式
-                                    Catalog2Vo.Catalog3Vo catalog3Vo = new Catalog2Vo.Catalog3Vo(
-                                            l2.getCatId().toString()
-                                            , l3.getCatId().toString()
-                                            , l3.getName());
+                                if (level3Catalog != null) {
+                                    List<Catalog2Vo.Catalog3Vo> catalog3Vos = level3Catalog.stream().map(l3 -> {
+                                        //2、封装成指定格式
+                                        Catalog2Vo.Catalog3Vo catalog3Vo = new Catalog2Vo.Catalog3Vo(
+                                                l2.getCatId().toString()
+                                                , l3.getCatId().toString()
+                                                , l3.getName());
 
-                                    return catalog3Vo;
-                                }).collect(Collectors.toList());
-                                catalog2Vo.setCatalog3List(catalog3Vos);
-                            }
+                                        return catalog3Vo;
+                                    }).collect(Collectors.toList());
+                                    catalog2Vo.setCatalog3List(catalog3Vos);
+                                }
 
-                            return catalog2Vo;
-                        }).collect(Collectors.toList());
-                    }
+                                return catalog2Vo;
+                            }).collect(Collectors.toList());
+                        }
 
-                    return catalog2Vos;
-                }));
+                        return catalog2Vos;
+                    }));
 
-        return parentCid;
-
+            //TODO 将查询到的数据缓存到redis中的操作同样要在synchronized锁中进行
+            redisTemplate.opsForValue().set("catalogJson", parentCid, 30, TimeUnit.MINUTES);//缓存到redis中 30分钟失效
+            log.info("将数据缓存到redis中");
+            return parentCid;//返回数据中查询好的结果数据
+        }
     }
 
     /**

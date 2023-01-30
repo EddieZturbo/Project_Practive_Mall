@@ -297,7 +297,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                     return catalog2Vos;
                 }));
 
-        //TODO 将查询到的数据缓存到redis中的操作同样要在synchronized锁中进行
+        //TODO 将查询到的数据缓存到redis中的操作同样要在锁中进行
         redisTemplate.opsForValue().set("catalogJson", parentCid, 30, TimeUnit.MINUTES);//缓存到redis中 30分钟失效
         log.info("将数据缓存到redis中");
         return parentCid;//返回数据中查询好的结果数据

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Catalog2Vo {
+public class Catalog2Vo implements Serializable {
     /**
      * 一级父分类的id
      */
@@ -35,7 +36,7 @@ public class Catalog2Vo {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Catalog3Vo {
+    public static class Catalog3Vo implements Serializable{
 
         /**
          * 父分类、二级分类id

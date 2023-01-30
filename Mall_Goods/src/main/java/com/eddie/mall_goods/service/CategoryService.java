@@ -25,10 +25,10 @@ public interface CategoryService extends IService<CategoryEntity> {
     /**
      * 找到catelogId的完整路径
      * [父id，儿id，孙id]
-     * @param catelogId
+     * @param catalogId
      * @return
      */
-    Long[] findCatelogPath(Long catelogId);
+    Long[] findCatalogPath(Long catalogId);
 
     List<CategoryEntity> getLevel1Categories();
 

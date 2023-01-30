@@ -28,6 +28,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <!--Redis缓存-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <!--TODO 底层使用lettuce-core客户端 io.netty 会导致堆外内存溢出（若未指定堆外内存则默认为我们设定的Xmx100m） 解决 方式①升级lettuce 方式②切换至jedis（并发稍弱）-->
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

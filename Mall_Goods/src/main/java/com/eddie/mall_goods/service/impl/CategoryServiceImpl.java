@@ -10,6 +10,7 @@ import com.eddie.common.utils.PageUtils;
 import com.eddie.common.utils.Query;
 import com.eddie.mall_goods.dao.CategoryDao;
 import com.eddie.mall_goods.entity.CategoryEntity;
+import com.eddie.mall_goods.service.CategoryBrandRelationService;
 import com.eddie.mall_goods.service.CategoryService;
 import com.eddie.mall_goods.vo.Catalog2Vo;
 import lombok.Synchronized;
@@ -17,10 +18,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +39,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
     @Autowired
     private RedissonClient redissonClient;
+
+    @Autowired
+    private CategoryBrandRelationService categoryBrandRelationService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -163,6 +169,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
                 });
         return catalogJson;
     }
+
 
     /**
      * 从数据库中获取数据 TODO 使用Redisson
@@ -344,6 +351,25 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             findCatalogFatherPath(parentCid, path);
         }
         return path;
+    }
+
+
+    /**
+     * 修改 同时修改pms_category_brand_relation分类和品牌管理的关联表
+     * @param category
+     */
+    @CacheEvict(cacheNames = {"Categories"},key = "'getLevel1Categories'")//TODO 以及同时更新缓存（数据一致性之缓存失效方式）
+    @Transactional
+    @Override
+    public void updateByIdWithBrandRelationAndCache(CategoryEntity category) {
+        //更新分类数据
+        this.updateById(category);
+        //更新pms_category_brand_relation分类和品牌管理的关联表
+        categoryBrandRelationService.updateCategory(category.getCatId(),category.getName());
+
+        //及时清除缓存
+        redisTemplate.delete("catalogJson");
+
     }
 
 }

@@ -81,18 +81,16 @@ public class CategoryController {
     //@RequiresPermissions("mall_goods:category:update")
     public R updateSort(@RequestBody CategoryEntity[] category) {
         categoryService.updateBatchById(Arrays.asList(category));
-
         return R.ok();
     }
 
     /**
-     * 修改
+     * 修改 同时修改pms_category_brand_relation分类和品牌管理的关联表 以及同时更新缓存
      */
     @RequestMapping("/update")
     //@RequiresPermissions("mall_goods:category:update")
     public R update(@RequestBody CategoryEntity category) {
-        categoryService.updateById(category);
-
+        categoryService.updateByIdWithBrandRelationAndCache(category);
         return R.ok();
     }
 

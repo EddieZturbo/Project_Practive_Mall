@@ -81,13 +81,13 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     }
 
     @Override
-    public PageUtils getBaseAttrPage(Map<String, Object> params, Long catelogId, String attrType) {
+    public PageUtils getBaseAttrPage(Map<String, Object> params, Long catalogId, String attrType) {
         LambdaQueryWrapper<AttrEntity> queryWrapper = new LambdaQueryWrapper<AttrEntity>().eq(
                 AttrEntity::getAttrType
                 , "base".equalsIgnoreCase(attrType) ? ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode() : ProductConstant.AttrEnum.ATTR_TYPE_SALE.getCode());
 
-        if (catelogId != 0) {
-            queryWrapper.eq(AttrEntity::getCatelogId, catelogId);
+        if (catalogId != 0) {
+            queryWrapper.eq(AttrEntity::getCatalogId, catalogId);
         }
         String key = (String) params.get("key");
         if (StringUtils.isNotEmpty(key)) {
@@ -119,9 +119,9 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                         }
                     }
                     //设置分类的名字
-                    CategoryEntity categoryEntity = categoryDao.selectById(attrEntity.getCatelogId());
+                    CategoryEntity categoryEntity = categoryDao.selectById(attrEntity.getCatalogId());
                     if (null != categoryEntity) {
-                        attrRespVo.setCatelogName(categoryEntity.getName());//设置分类的name
+                        attrRespVo.setCatalogName(categoryEntity.getName());//设置分类的name
                     }
 
                     return attrRespVo;
@@ -168,12 +168,12 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
     public PageUtils getNoRelationAttr(Map<String, Object> params, Long attrgroupId) {
         //1、当前分组只能关联自己所属的分类里面的所有属性
         AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrgroupId);
-        Long catelogId = attrGroupEntity.getCatelogId();
+        Long catalogId = attrGroupEntity.getCatalogId();
 
         //2、当前分组只能关联别的分组没有引用的属性
         //2.1)、当前分类下的其他分组
         List<AttrGroupEntity> attrGroupEntities = attrGroupDao.selectList(
-                new LambdaQueryWrapper<AttrGroupEntity>().eq(AttrGroupEntity::getCatelogId, catelogId));
+                new LambdaQueryWrapper<AttrGroupEntity>().eq(AttrGroupEntity::getCatalogId, catalogId));
         List<Long> attrGroupIds = attrGroupEntities.stream()
                 .map((item) -> {
                     return item.getAttrGroupId();
@@ -188,7 +188,7 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
                 })
                 .collect(Collectors.toList());
         //2.3)、从当前分类的所有属性中移除这些属性；
-        LambdaQueryWrapper<AttrEntity> lambdaQueryWrapper = new LambdaQueryWrapper<AttrEntity>().eq(AttrEntity::getCatelogId, catelogId)
+        LambdaQueryWrapper<AttrEntity> lambdaQueryWrapper = new LambdaQueryWrapper<AttrEntity>().eq(AttrEntity::getCatalogId, catalogId)
                 .eq(AttrEntity::getAttrType, ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
         if(attrIds != null && attrIds.size() > 0){
             lambdaQueryWrapper.notIn(AttrEntity::getAttrId,attrIds);
@@ -231,12 +231,12 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
 
 
         //设置分类信息
-        Long catalogId = attrEntity.getCatelogId();
+        Long catalogId = attrEntity.getCatalogId();
         Long[] catalogPath = categoryService.findCatalogPath(catalogId);
-        attrRespVo.setCatelogPath(catalogPath);
+        attrRespVo.setCatalogPath(catalogPath);
         CategoryEntity categoryEntity = categoryDao.selectById(catalogId);
         if (null != categoryEntity) {
-            attrRespVo.setCatelogName(categoryEntity.getName());
+            attrRespVo.setCatalogName(categoryEntity.getName());
         }
         return attrRespVo;
     }

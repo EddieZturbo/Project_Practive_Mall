@@ -7,10 +7,15 @@
     <resultMap type="com.eddie.mall_goods.entity.CategoryBrandRelationEntity" id="categoryBrandRelationMap">
         <result property="id" column="id"/>
         <result property="brandId" column="brand_id"/>
-        <result property="catelogId" column="catelog_id"/>
+        <result property="catalogId" column="catalog_id"/>
         <result property="brandName" column="brand_name"/>
-        <result property="catelogName" column="catelog_name"/>
+        <result property="catalogName" column="catalog_name"/>
     </resultMap>
+
+    <!--void updateCategory(@Param("catId") Long catId, @Param("name") String name);-->
+    <update id="updateCategory">
+        update `pms_category_brand_relation` set `catalog_name` = #{name} where `catalog_id` = #{catId}
+    </update>
 
 
 </mapper>

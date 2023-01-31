@@ -29,5 +29,13 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
 
 
     void updateBrand(Long brandId, String name);
+
+    /**
+     * 更新菜单时候 级联更新pms_category_brand_relation分类和品牌管理的关联表
+     * @param catId
+     * @param name
+     */
+    void updateCategory(Long catId, String name);
+
 }
 

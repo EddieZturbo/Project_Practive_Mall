@@ -33,5 +33,11 @@ public interface CategoryService extends IService<CategoryEntity> {
     List<CategoryEntity> getLevel1Categories();
 
     Map<String,List<Catalog2Vo>> getCatalogJson();
+
+    /**
+     * 修改 同时修改pms_category_brand_relation分类和品牌管理的关联表 以及同时更新缓存
+     * @param category
+     */
+    void updateByIdWithBrandRelationAndCache(CategoryEntity category);
 }
 

@@ -55,7 +55,7 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     public List<BrandEntity> getBrandsByCatId(Long catId) {
         //根据传来的分类id(catID)通过查询pms_attr_attrgroup_relation表中的数据
         List<CategoryBrandRelationEntity> categoryBrandRelationEntities = categoryBrandRelationDao.selectList(
-                new LambdaQueryWrapper<CategoryBrandRelationEntity>().eq(CategoryBrandRelationEntity::getCatelogId, catId));
+                new LambdaQueryWrapper<CategoryBrandRelationEntity>().eq(CategoryBrandRelationEntity::getCatalogId, catId));
 
         //通过stream的形式将查出的分类下的品牌的id作为查询条件 并通过brandService查询出相应的完整品牌数据
         List<BrandEntity> brandEntityList = categoryBrandRelationEntities.stream()
@@ -77,11 +77,11 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
     public void saveWithName(CategoryBrandRelationEntity categoryBrandRelation) {
         //分别从pms_brand和pms_category数据表中根据id查询相应的对象
         BrandEntity brandEntity = brandService.getById(categoryBrandRelation.getBrandId());
-        CategoryEntity categoryEntity = categoryService.getById(categoryBrandRelation.getCatelogId());
+        CategoryEntity categoryEntity = categoryService.getById(categoryBrandRelation.getCatalogId());
 
         //将查寻到的pms_brand和pms_category的name 赋值给到CategoryBrandRelationEntity
         categoryBrandRelation.setBrandName(brandEntity.getName());
-        categoryBrandRelation.setCatelogName(categoryEntity.getName());
+        categoryBrandRelation.setCatalogName(categoryEntity.getName());
 
         //并操作pms_category_brand_relation数据表进行保存
         categoryBrandRelationDao.insert(categoryBrandRelation);
@@ -93,6 +93,11 @@ public class CategoryBrandRelationServiceImpl extends ServiceImpl<CategoryBrandR
         relationEntity.setBrandId(brandId);
         relationEntity.setBrandName(name);
         this.update(relationEntity,new LambdaQueryWrapper<CategoryBrandRelationEntity>().eq(CategoryBrandRelationEntity::getBrandId,brandId));
+    }
+
+    @Override
+    public void updateCategory(Long catId, String name) {
+        baseMapper.updateCategory(catId,name);
     }
 
 

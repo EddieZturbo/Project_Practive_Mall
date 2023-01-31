@@ -41,10 +41,10 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
     }
 
     @Override
-    public PageUtils queryPage(Map<String, Object> params, Long catelogId) {
+    public PageUtils queryPage(Map<String, Object> params, Long catalogId) {
         String key = (String) params.get("key");
         LambdaQueryWrapper<AttrGroupEntity> queryWrapper = new LambdaQueryWrapper<>();
-        //select * from pms_attr_group where catelogId = ? and (attr_group_id = ? or attr_group_name = ?)
+        //select * from pms_attr_group where catalogId = ? and (attr_group_id = ? or attr_group_name = ?)
         if(!StringUtils.isEmpty(key)){//如果有key（额外的查询条件attr_group_id = ? or attr_group_name = ?）
             queryWrapper.and((obj) -> {
                 obj.eq(AttrGroupEntity::getAttrGroupId,key)
@@ -52,20 +52,20 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
                         .like(AttrGroupEntity::getAttrGroupName,key);
             });
         }
-        if(catelogId == 0){
-            //如果没有传递catelogId属性值 就默认使用AttrGroupServiceImpl.page()方法进行查询所有的分类
+        if(catalogId == 0){
+            //如果没有传递catalogId属性值 就默认使用AttrGroupServiceImpl.page()方法进行查询所有的分类
             IPage<AttrGroupEntity> page = this.page(new Query<AttrGroupEntity>().getPage(params),queryWrapper);
             return new PageUtils(page);
         }else{
-            queryWrapper.eq(AttrGroupEntity::getCatelogId,catelogId);
+            queryWrapper.eq(AttrGroupEntity::getCatalogId,catalogId);
             IPage<AttrGroupEntity> page = this.page(new Query<AttrGroupEntity>().getPage(params),queryWrapper);
             return new PageUtils(page);
         }
     }
 
     @Override
-    public List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId) {
-        List<AttrGroupEntity> attrGroupEntities = this.list(new LambdaQueryWrapper<AttrGroupEntity>().eq(AttrGroupEntity::getCatelogId, catelogId));
+    public List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatalogId(Long catalogId) {
+        List<AttrGroupEntity> attrGroupEntities = this.list(new LambdaQueryWrapper<AttrGroupEntity>().eq(AttrGroupEntity::getCatalogId, catalogId));
         List<AttrGroupWithAttrsVo> attrGroupWithAttrsVos = attrGroupEntities.stream()
                 .map(item -> {
                     AttrGroupWithAttrsVo attrGroupWithAttrsVo = new AttrGroupWithAttrsVo();

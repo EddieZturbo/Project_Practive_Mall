@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
@@ -116,8 +117,11 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         return (Long[]) fullPath.toArray(new Long[fullPath.size()]);
     }
 
+    @Cacheable(cacheNames = {"Categories"}//指定缓存的类名
+            ,key = "#root.methodName")//指定这一类缓存下的key名
     @Override
     public List<CategoryEntity> getLevel1Categories() {
+        System.out.println("getLevel1Categories()方法调用");
         List<CategoryEntity> categoryEntityList = this.list(
                 new LambdaQueryWrapper<CategoryEntity>()
                         .eq(CategoryEntity::getCatLevel, 1));
@@ -134,20 +138,22 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
             if (null == catalogJsonFromDB) {//数据库中也查询不到
                 //TODO 处理缓存穿透问题
                 //缓存一个空对象 60s有效
+                Map<String, List<Catalog2Vo>> nullCatalogJson = new HashMap<>();
+                nullCatalogJson.put("1000000",Catalog2Vo.getNullCatalog2Vo());
                 log.info("缓存穿透");
-                redisTemplate.opsForValue().set("catalogJson", "null", 60, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(
+                        "catalogJson",
+                        nullCatalogJson,//缓存一个空对象
+                        60,
+                        TimeUnit.MINUTES);
+                return nullCatalogJson;//返回一个空对象
+
             }
             //TODO 将查询到的数据缓存到redis中 在查库操作方法中进行 要确保在synchronized锁中进行
             return catalogJsonFromDB;//返回从数据库中查询到的数据
         }
 
-        //如果缓存中查询到的是"null" 则表明缓存击穿
         String toJSONString = JSON.toJSONString(jsonFromRedis);
-        if ("null".equals(toJSONString)) {
-            Map<String, List<Catalog2Vo>> nullValue = new HashMap<>();
-            nullValue.put("null", null);
-            return nullValue;//返回空对象
-        }
 
         //缓存中查询到数据直接返回
         log.info("从缓存中获取到数据");
@@ -255,8 +261,9 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 
         //1、1）查出所有一级分类
         List<CategoryEntity> level1Categories = getLevel1Categories();
-
-
+        if(level1Categories == null){//查询一级缓存的非空判断
+            return null;
+        }
         //封装数据
         Map<String, List<Catalog2Vo>> parentCid = level1Categories.stream().collect(Collectors.toMap(
                 k -> k.getCatId().toString(),

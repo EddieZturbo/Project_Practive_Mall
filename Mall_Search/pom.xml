@@ -29,6 +29,11 @@
             <groupId>com.eddie</groupId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <!--Thymeleaf视图渲染-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

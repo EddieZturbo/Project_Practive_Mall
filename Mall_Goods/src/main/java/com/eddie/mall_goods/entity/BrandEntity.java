@@ -2,16 +2,15 @@ package com.eddie.mall_goods.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.util.Date;
-
 import com.eddie.common.validation.ListValue;
 import com.eddie.common.validation.SaveGroup;
 import com.eddie.common.validation.UpdateGroup;
 import com.eddie.common.validation.UpdateStatusGroup;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
+
 import javax.validation.constraints.*;
+import java.io.Serializable;
 
 /**
  * 品牌

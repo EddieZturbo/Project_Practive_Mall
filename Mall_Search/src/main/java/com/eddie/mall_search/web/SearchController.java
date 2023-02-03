@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class SearchController {
 
-    @RequestMapping({"/","/index.html"})
+    @RequestMapping({"/","/list.html"})
     public String indexPage(Model model){
         return "index";
     }

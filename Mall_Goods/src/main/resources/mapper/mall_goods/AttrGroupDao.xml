@@ -13,5 +13,27 @@
         <result property="catalogId" column="catalog_id"/>
     </resultMap>
 
+    <!--在select查询的sql是通过底层反射调用setXxx()方法来将查询到的结果转换成一个Java的实体类对象
+    要求setXxx()的方法名要与数据库表中的字段名保持一致
+    TODO resultMap处理字段和属性的映射关系-->
+    <resultMap type="com.eddie.mall_goods.vo.SpuItemAttrGroupVo" id="spuItemAttrGroupVoMap">
+        <result column="attr_group_name" property="groupName"></result>
+        <collection property="attrs" ofType="com.eddie.mall_goods.vo.Attr"><!--属性是结合类型-->
+            <result column="attr_id" property="attrId"></result>
+            <result column="attr_name" property="attrName"></result>
+            <result column="attr_value" property="attrValue"></result>
+        </collection>
+    </resultMap>
+
+
+    <!--List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySkuId(@Param("spuId") Long spuId, @Param("catalogId") Long catalogId);-->
+    <select id="getAttrGroupWithAttrsBySkuId" resultType="com.eddie.mall_goods.vo.SpuItemAttrGroupVo" resultMap="spuItemAttrGroupVoMap">
+        SELECT attrg.attr_group_name,attrv.attr_id,attrv.attr_name,attrv.attr_value
+        FROM `pms_attr_group` as attrg
+                 LEFT JOIN `pms_attr_attrgroup_relation` as agrelate ON agrelate.attr_group_id = attrg.attr_group_id
+                 LEFT JOIN `pms_product_attr_value` as attrv ON agrelate.attr_id = attrv.attr_id
+        where attrv.spu_id = #{spuId} and attrg.catalog_id = #{catalogId}
+    </select>
+
 
 </mapper>

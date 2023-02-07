@@ -14,4 +14,28 @@
     </resultMap>
 
 
+    <resultMap type="com.eddie.mall_goods.vo.SkuItemSaleAttrVo" id="skuItemSaleAttrVoMap">
+        <result column="attr_id" property="attrId"></result>
+        <result column="attr_name" property="attrName"></result>
+        <result column="attr_values" property="attrValues"></result>
+    </resultMap>
+
+
+    <!--List<SkuItemSaleAttrVo> getSaleAttrValueBySpuId(@Param("spuId") Long spuId);-->
+    <select id="getSaleAttrValueBySpuId" resultType="com.eddie.mall_goods.vo.SkuItemSaleAttrVo" resultMap="skuItemSaleAttrVoMap">
+        SELECT
+            skusav.attr_id,
+            skusav.attr_name,
+            GROUP_CONCAT(DISTINCT skusav.attr_value) attr_values
+        FROM
+            `pms_sku_info` info
+                LEFT JOIN `pms_sku_sale_attr_value` skusav ON skusav.sku_id = info.sku_id
+        WHERE
+            info.spu_id = #{spuId}
+        GROUP BY
+            skusav.attr_id,
+            skusav.attr_name;
+    </select>
+
+
 </mapper>

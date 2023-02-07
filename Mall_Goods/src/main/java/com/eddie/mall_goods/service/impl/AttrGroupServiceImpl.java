@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.eddie.mall_goods.entity.AttrEntity;
 import com.eddie.mall_goods.service.AttrService;
 import com.eddie.mall_goods.vo.AttrGroupWithAttrsVo;
+import com.eddie.mall_goods.vo.SpuItemAttrGroupVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,17 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
                 })
                 .collect(Collectors.toList());
         return attrGroupWithAttrsVos;
+    }
+
+    /**
+     * 根据spuId查询出对应的所有属性的分组信息以及当前分组下的所有属性对应的值
+     * @param spuId
+     * @param catalogId
+     * @return
+     */
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySkuId(Long spuId, Long catalogId) {
+        return this.baseMapper.getAttrGroupWithAttrsBySkuId(spuId,catalogId);
     }
 
 }

@@ -1,6 +1,9 @@
 package com.eddie.mall_goods.service.impl;
 
+import com.eddie.mall_goods.vo.SkuItemSaleAttrVo;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -24,6 +27,11 @@ public class SkuSaleAttrValueServiceImpl extends ServiceImpl<SkuSaleAttrValueDao
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public List<SkuItemSaleAttrVo> getSaleAttrValueBySpuId(Long spuId) {
+        return baseMapper.getSaleAttrValueBySpuId(spuId);
     }
 
 }

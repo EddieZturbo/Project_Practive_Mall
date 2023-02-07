@@ -6,4 +6,6 @@ package com.eddie.mall_search.constant;
  */
 public class ESConstant {
     public static final String GOODS_INDEX = "goods";//sku数据在es中的索引
+
+    public static final Integer PRODUCT_PAGESIZE = 16;
 }

@@ -36,7 +36,7 @@ public class GoodsSaveServiceImpl implements GoodsSaveService {
     @Override
     public Boolean esGoodsUp(List<SkuEsModel> skuEsModelList) throws IOException {
         //保存数据到ElasticSearch中
-        //1)在es中建立index goods建立好映射关系   es-goods-mapping.txt
+        //1)在es中建立index goods建立好映射关系   new_product_mapping.json
         //2）将数据保存到ES中（bulk 批量进行保存）
         //public final BulkResponse bulk(BulkRequest bulkRequest, RequestOptions options)
         BulkRequest bulkRequest = new BulkRequest();

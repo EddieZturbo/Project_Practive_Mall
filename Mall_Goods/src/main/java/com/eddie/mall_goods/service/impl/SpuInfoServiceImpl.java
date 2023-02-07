@@ -243,7 +243,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         //TODO private List<Attrs> attrs;查询出可以进行检索的属性
         //根据spuId查询出所有的ProductAttrValueEntity
-        List<ProductAttrValueEntity> productAttrValueEntities = productAttrValueService.baseAttrlistforspu(spuId);
+        List<ProductAttrValueEntity> productAttrValueEntities = productAttrValueService.baseAttrListForSpu(spuId);
         //使用stream流的形式将所有ProductAttrValueEntity中的attr_id收集成list集合
         List<Long> attrIds = productAttrValueEntities.stream()
                 .map(productAttrValueEntity -> {

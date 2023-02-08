@@ -17,6 +17,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -42,6 +44,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @Autowired
+    ThreadPoolExecutor threadPoolExecutor;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -100,37 +105,48 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     }
 
     @Override
-    public SkuItemVo item(Long skuId) {
+    public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
         SkuItemVo skuItemVo = new SkuItemVo();
 
-        //1、sku基本信息的获取  pms_sku_info
-        SkuInfoEntity info = this.getById(skuId);
-        skuItemVo.setInfo(info);
-        Long spuId = info.getSpuId();
-        Long catalogId = info.getCatalogId();
 
-        //2、sku的图片信息    pms_sku_images
-        List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
-        skuItemVo.setImages(images);
+        //1、sku基本信息的获取  pms_sku_info(异步执行★)
+        CompletableFuture<SkuInfoEntity> skuInfoFuture = CompletableFuture.supplyAsync(() -> {
+            //异步任务获取info
+            SkuInfoEntity info = this.getById(skuId);
+            skuItemVo.setInfo(info);
+            return info;
+        }, threadPoolExecutor);
 
-        //3、获取spu的销售属性组合
-        List<SkuItemSaleAttrVo> skuItemSaleAttrVos = skuSaleAttrValueService.getSaleAttrValueBySpuId(spuId);
-        skuItemVo.setSaleAttr(skuItemSaleAttrVos);
+        CompletableFuture<Void> saleFuture = skuInfoFuture.thenAcceptAsync((info) -> {
+            //获取info的异步任务完成后 拿到异步任务的结果info 并进行以下操作
+            //3、获取spu的销售属性组合(等★完成后异步执行)
+            List<SkuItemSaleAttrVo> skuItemSaleAttrVos = skuSaleAttrValueService.getSaleAttrValueBySpuId(info.getSpuId());
+            skuItemVo.setSaleAttr(skuItemSaleAttrVos);
+        }, threadPoolExecutor);
 
-        //4、获取spu的介绍    pms_spu_info_desc
-        //根据查询到的sku的info获取到spu的id从而查询到对应的SpuInfoDescEntity
-        SpuInfoDescEntity desc = spuInfoDescService.getById(spuId);
-        skuItemVo.setDesc(desc);
+        CompletableFuture<Void> descFuture = skuInfoFuture.thenAcceptAsync((info) -> {
+            //4、获取spu的介绍    pms_spu_info_desc(等★完成后异步执行)
+            //根据查询到的sku的info获取到spu的id从而查询到对应的SpuInfoDescEntity
+            SpuInfoDescEntity desc = spuInfoDescService.getById(info.getSpuId());
+            skuItemVo.setDesc(desc);
+        }, threadPoolExecutor);
 
-        //5、获取spu的规格参数信息
-        List<SpuItemAttrGroupVo> groupWithAttrsBySkuId = attrGroupService.getAttrGroupWithAttrsBySkuId(spuId,catalogId);
-        skuItemVo.setGroupAttrs(groupWithAttrsBySkuId);
+        CompletableFuture<Void> groupAttrFuture = skuInfoFuture.thenAcceptAsync((info) -> {
+            //5、获取spu的规格参数信息(等★完成后异步执行)
+            List<SpuItemAttrGroupVo> groupWithAttrsBySkuId = attrGroupService.getAttrGroupWithAttrsBySkuId(info.getSpuId(), info.getCatalogId());
+            skuItemVo.setGroupAttrs(groupWithAttrsBySkuId);
+        }, threadPoolExecutor);
 
 
+        //2、sku的图片信息    pms_sku_images(异步执行☆)
+        CompletableFuture<Void> imagesFuture = CompletableFuture.runAsync(() -> {
+            List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
+            skuItemVo.setImages(images);
+        }, threadPoolExecutor);
 
 
-        //等到所有任务都完成
-
+        //等到所有任务都完成(get方法会阻塞主线程)
+        CompletableFuture.allOf(/*skuInfoFuture,可以省略；因为后续的三个只有它完成才会执行 */saleFuture,descFuture,groupAttrFuture,imagesFuture).get();
         return skuItemVo;
     }
 

@@ -18,7 +18,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<OrderEntity> page = this.page(
+        IPage<OrderEntity> page = baseMapper.selectPage(
                 new Query<OrderEntity>().getPage(params),
                 new QueryWrapper<OrderEntity>()
         );

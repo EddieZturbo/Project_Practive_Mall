@@ -35,3 +35,9 @@
 #      logic-delete-value: 1
 #      logic-not-delete-value: 0
 #      logic-delete-field: showStatus
+#goods:
+#  thread:
+#    pool:
+#      core: 50
+#      max: 200
+#      live-time: 10

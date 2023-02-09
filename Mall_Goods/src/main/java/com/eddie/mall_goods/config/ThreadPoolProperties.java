@@ -4,7 +4,7 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-/**
+/** TODO 线程池配置绑定外部Properties文件
  @author EddieZhang
  @create 2023-02-08 9:21 PM
  */

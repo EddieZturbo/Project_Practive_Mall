@@ -11,6 +11,11 @@ import java.util.concurrent.*;
 @Configuration
 public class MyThreadPoolConfig {
 
+    /**
+     * TODO 线程池配置(ThreadPoolExecutor)
+     * @param threadPool
+     * @return
+     */
     @Bean
     public ThreadPoolExecutor threadPoolExecutor(ThreadPoolProperties threadPool){
         return new ThreadPoolExecutor(

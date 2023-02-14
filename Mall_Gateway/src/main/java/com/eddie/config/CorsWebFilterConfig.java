@@ -6,7 +6,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-/**
+/** TODO 配置CorsWebFilter 解决跨域问题
  @author EddieZhang
  @create 2022-12-20 9:16
  */

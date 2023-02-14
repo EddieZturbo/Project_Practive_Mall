@@ -27,6 +27,7 @@
         <module>Mall_Gateway</module>
         <module>Mall_Third-Party</module>
         <module>Mall_Search</module>
+        <module>Mall_Auth-Server</module>
     </modules>
 
 </project>

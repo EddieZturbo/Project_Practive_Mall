@@ -59,7 +59,7 @@
                 <div></div>
                 请输入账户名和密码
             </div>
-            <form action="/login" method="post">
+            <form action="/loginMethod" method="post">
                 <div style="color: red" th:text="${errors != null ? (#maps.containsKey(errors, 'msg') ? errors.msg : '') : ''}"></div>
                 <ul>
                     <li class="top_1">

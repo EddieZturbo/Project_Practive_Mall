@@ -10,6 +10,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Mall_Coupon" />
         <module name="Mall_Commons" />
+        <module name="Mall_Cart" />
         <module name="Mall_Gateway" />
         <module name="Mall_Order" />
         <module name="renren-generator" />
@@ -25,6 +26,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="Mall_Auth-Server" target="1.8" />
+      <module name="Mall_Cart" target="1.8" />
       <module name="Mall_Common" target="8" />
       <module name="Mall_Coupon" target="1.8" />
       <module name="Mall_Gateway" target="1.8" />
@@ -42,6 +44,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Mall_Auth-Server" options="-parameters" />
+      <module name="Mall_Cart" options="-parameters" />
       <module name="Mall_Common" options="-parameters" />
       <module name="Mall_Coupon" options="-parameters" />
       <module name="Mall_Gateway" options="-parameters" />

@@ -8,11 +8,11 @@
         <version>2.1.8.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.eddie</groupId>
-    <artifactId>Mall_Auth-Server</artifactId>
+    <groupId>eddie.com</groupId>
+    <artifactId>Mall_Cart</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Mall_Auth-Server</name>
-    <description>Mall_Auth-Server</description>
+    <name>Mall_Cart</name>
+    <description>Mall_Cart</description>
     <properties>
         <java.version>1.8</java.version>
         <spring-cloud.version>Greenwich.SR3</spring-cloud.version>
@@ -28,6 +28,12 @@
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
         </dependency>
+        <!--Redis缓存-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <!--TODO 底层使用lettuce-core客户端 io.netty 会导致堆外内存溢出（若未指定堆外内存则默认为我们设定的Xmx100m） 解决 方式①升级lettuce 方式②切换至jedis（并发稍弱）-->
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -40,13 +46,6 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
-        <!--Redis缓存-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <!--TODO 底层使用lettuce-core客户端 io.netty 会导致堆外内存溢出（若未指定堆外内存则默认为我们设定的Xmx100m） 解决 方式①升级lettuce 方式②切换至jedis（并发稍弱）-->
-        </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -69,6 +68,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
 
     <build>
         <plugins>

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Mall_Auth-Server/Mall_Auth-Server.iml" filepath="$PROJECT_DIR$/Mall_Auth-Server/Mall_Auth-Server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Mall_Cart/Mall_Cart.iml" filepath="$PROJECT_DIR$/Mall_Cart/Mall_Cart.iml" />
       <module fileurl="file://$PROJECT_DIR$/Mall_Common/Mall_Common.iml" filepath="$PROJECT_DIR$/Mall_Common/Mall_Common.iml" />
       <module fileurl="file://$PROJECT_DIR$/Mall_Coupon/Mall_Coupon.iml" filepath="$PROJECT_DIR$/Mall_Coupon/Mall_Coupon.iml" />
       <module fileurl="file://$PROJECT_DIR$/Mall_Gateway/Mall_Gateway.iml" filepath="$PROJECT_DIR$/Mall_Gateway/Mall_Gateway.iml" />

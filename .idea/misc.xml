@@ -13,6 +13,7 @@
         <option value="$PROJECT_DIR$/Mall_Third-Party/pom.xml" />
         <option value="$PROJECT_DIR$/Mall_Search/pom.xml" />
         <option value="$PROJECT_DIR$/Mall_Auth-Server/pom.xml" />
+        <option value="$PROJECT_DIR$/Mall_Cart/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

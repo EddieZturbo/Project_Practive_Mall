@@ -41,3 +41,7 @@
 #      core: 50
 #      max: 200
 #      live-time: 10
+#spring:
+#  session:
+#    store-type: redis #springSession整合后整合用于储存的工具
+#    timeout: 30m

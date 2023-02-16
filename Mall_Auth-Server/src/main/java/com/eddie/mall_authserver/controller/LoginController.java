@@ -4,6 +4,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.eddie.common.constant.AuthServerConstant;
 import com.eddie.common.exception.BizCodeEnum;
 import com.eddie.common.utils.R;
+import com.eddie.common.vo.MemberResponseVo;
 import com.eddie.mall_authserver.feign.MemberOpenFeign;
 import com.eddie.mall_authserver.feign.ThirdSmsOpenFeign;
 import com.eddie.mall_authserver.vo.UserLoginVo;
@@ -20,11 +21,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.eddie.common.constant.AuthServerConstant.LOGIN_USER;
 
 /**
  @author EddieZhang
@@ -129,16 +133,18 @@ public class LoginController {
     }
 
     @PostMapping("/loginMethod")
-    public String loginMethod(UserLoginVo vo) {
+    public String loginMethod(UserLoginVo vo, RedirectAttributes attributes, HttpSession session) {
         //远程调用member服务进行登录信息验证
         R login = memberOpenFeign.login(vo);
         if (login.getCode() != 0) {//调用远程服务进行登录不成功 重新进入到登录页面
             Map<String, String> errorMap = new HashMap<>();
             //从远程服务调用的返回结果中获取调用失败的信息
-            errorMap.put("msg", login.getData("msg", new TypeReference<String>() {
-            }));
+            errorMap.put("msg", login.getData("msg", new TypeReference<String>() {}));
+            attributes.addFlashAttribute("errors",errorMap);
             return "redirect:http://auth.zhangjinhao.com/login";
         } else {//成功 重定向到商城首页
+            MemberResponseVo data = login.getData("data", new TypeReference<MemberResponseVo>() {});
+            session.setAttribute(LOGIN_USER,data);
             return "redirect:http://zhangjinhao.com";
         }
     }

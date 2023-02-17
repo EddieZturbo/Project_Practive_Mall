@@ -1,6 +1,8 @@
 package eddie.com.mall_cart.config;
 
+import eddie.com.mall_cart.interceptor.UserCartInterceptor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -18,5 +20,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("cartList");
         registry.addViewController("/success").setViewName("success");
+    }
+
+    /**
+     * TODO 在WebMvcConfig中addInterceptors配置拦截器 并指定拦截器拦截的范围
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new UserCartInterceptor()).addPathPatterns("/**");
     }
 }

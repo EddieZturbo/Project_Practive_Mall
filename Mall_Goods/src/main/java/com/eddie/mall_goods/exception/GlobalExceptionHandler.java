@@ -33,10 +33,10 @@ public class GlobalExceptionHandler {
         return R.error(BizCodeEnum.VALID_EXCEPTION.getCode(), BizCodeEnum.VALID_EXCEPTION.getMessage()).put("data", map);
     }
 
-    @ExceptionHandler(value = Throwable.class)
-    public R handleException(Throwable throwable) {
-        log.error("错误：{}", throwable.toString());
-        return R.error(BizCodeEnum.UNKNOW_EXCEPTION.getCode(), BizCodeEnum.UNKNOW_EXCEPTION.getMessage());
-    }
+//    @ExceptionHandler(value = Throwable.class)
+//    public R handleException(Throwable throwable) {
+//        log.error("错误：{}", throwable.toString());
+//        return R.error(BizCodeEnum.UNKNOW_EXCEPTION.getCode(), BizCodeEnum.UNKNOW_EXCEPTION.getMessage());
+//    }
 
 }

@@ -190,18 +190,18 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         //2.3)、从当前分类的所有属性中移除这些属性；
         LambdaQueryWrapper<AttrEntity> lambdaQueryWrapper = new LambdaQueryWrapper<AttrEntity>().eq(AttrEntity::getCatalogId, catalogId)
                 .eq(AttrEntity::getAttrType, ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode());
-        if(attrIds != null && attrIds.size() > 0){
-            lambdaQueryWrapper.notIn(AttrEntity::getAttrId,attrIds);
+        if (attrIds != null && attrIds.size() > 0) {
+            lambdaQueryWrapper.notIn(AttrEntity::getAttrId, attrIds);
         }
         //判断是否有查询参数
         String key = (String) params.get("key");
-        if(StringUtils.isNotEmpty(key)){
-            lambdaQueryWrapper.eq(AttrEntity::getAttrId,key)
+        if (StringUtils.isNotEmpty(key)) {
+            lambdaQueryWrapper.eq(AttrEntity::getAttrId, key)
                     .or()
-                    .like(AttrEntity::getAttrName,key);
+                    .like(AttrEntity::getAttrName, key);
         }
         //返回分页数据
-        IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params),lambdaQueryWrapper);
+        IPage<AttrEntity> page = this.page(new Query<AttrEntity>().getPage(params), lambdaQueryWrapper);
         PageUtils pageUtils = new PageUtils(page);
 
         return pageUtils;
@@ -213,32 +213,35 @@ public class AttrServiceImpl extends ServiceImpl<AttrDao, AttrEntity> implements
         AttrRespVo attrRespVo = new AttrRespVo();//构造AttrRespVo对象 作为返回结果
         AttrEntity attrEntity = this.getById(attrId);//查询出基本信息
 
-        BeanUtils.copyProperties(attrEntity, attrRespVo);//将查询的出基本信息copy到AttrRespVo对象
-
-        //如果是进本参数类型的话就设置分组信息
-        if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode()) {
-            AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = attrAttrgroupRelationDao.selectOne(
-                    new LambdaQueryWrapper<AttrAttrgroupRelationEntity>().eq(AttrAttrgroupRelationEntity::getAttrId,
-                            attrId));
-            if (null != attrAttrgroupRelationEntity) {
-                attrRespVo.setAttrGroupId(attrAttrgroupRelationEntity.getAttrGroupId());
-                AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrAttrgroupRelationEntity.getAttrGroupId());
-                if (null != attrGroupEntity) {
-                    attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
+        if (attrEntity != null) {
+            BeanUtils.copyProperties(attrEntity, attrRespVo);//将查询的出基本信息copy到AttrRespVo对象
+            //如果是进本参数类型的话就设置分组信息
+            if (attrEntity.getAttrType() == ProductConstant.AttrEnum.ATTR_TYPE_BASE.getCode()) {
+                AttrAttrgroupRelationEntity attrAttrgroupRelationEntity = attrAttrgroupRelationDao.selectOne(
+                        new LambdaQueryWrapper<AttrAttrgroupRelationEntity>().eq(AttrAttrgroupRelationEntity::getAttrId,
+                                attrId));
+                if (null != attrAttrgroupRelationEntity) {
+                    attrRespVo.setAttrGroupId(attrAttrgroupRelationEntity.getAttrGroupId());
+                    AttrGroupEntity attrGroupEntity = attrGroupDao.selectById(attrAttrgroupRelationEntity.getAttrGroupId());
+                    if (null != attrGroupEntity) {
+                        attrRespVo.setGroupName(attrGroupEntity.getAttrGroupName());
+                    }
                 }
             }
-        }
 
 
-        //设置分类信息
-        Long catalogId = attrEntity.getCatalogId();
-        Long[] catalogPath = categoryService.findCatalogPath(catalogId);
-        attrRespVo.setCatalogPath(catalogPath);
-        CategoryEntity categoryEntity = categoryDao.selectById(catalogId);
-        if (null != categoryEntity) {
-            attrRespVo.setCatalogName(categoryEntity.getName());
+            //设置分类信息
+            Long catalogId = attrEntity.getCatalogId();
+            Long[] catalogPath = categoryService.findCatalogPath(catalogId);
+            attrRespVo.setCatalogPath(catalogPath);
+            CategoryEntity categoryEntity = categoryDao.selectById(catalogId);
+            if (null != categoryEntity) {
+                attrRespVo.setCatalogName(categoryEntity.getName());
+            }
+            return attrRespVo;
+        }else{
+            return new AttrRespVo();
         }
-        return attrRespVo;
     }
 
     @Transactional

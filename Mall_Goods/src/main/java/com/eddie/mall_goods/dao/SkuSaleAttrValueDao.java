@@ -19,4 +19,6 @@ import java.util.List;
 public interface SkuSaleAttrValueDao extends BaseMapper<SkuSaleAttrValueEntity> {
 
     List<SkuItemSaleAttrVo> getSaleAttrValueBySpuId(@Param("spuId") Long spuId);
+
+    List<String> getSaleAttrStringListBySkuId(@Param("skuId") Long skuId);
 }

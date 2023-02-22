@@ -1,14 +1,11 @@
 package com.eddie.mall_goods.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.eddie.mall_goods.entity.SkuSaleAttrValueEntity;
 import com.eddie.mall_goods.service.SkuSaleAttrValueService;
@@ -29,6 +26,12 @@ import com.eddie.common.utils.R;
 public class SkuSaleAttrValueController {
     @Autowired
     private SkuSaleAttrValueService skuSaleAttrValueService;
+
+    @GetMapping("stringList/{skuId}")
+    public List<String> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId){
+        List<String> skuSaleAttrValuesAsStringList = skuSaleAttrValueService.getSkuSaleAttrValuesAsStringList(skuId);
+        return skuSaleAttrValuesAsStringList;
+    }
 
     /**
      * 列表

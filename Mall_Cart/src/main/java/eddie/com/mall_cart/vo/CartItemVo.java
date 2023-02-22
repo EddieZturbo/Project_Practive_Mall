@@ -1,9 +1,10 @@
 package eddie.com.mall_cart.vo;
 
+import lombok.Data;
 import java.math.BigDecimal;
 import java.util.List;
 
-
+@Data
 public class CartItemVo {
 
     private Long skuId;

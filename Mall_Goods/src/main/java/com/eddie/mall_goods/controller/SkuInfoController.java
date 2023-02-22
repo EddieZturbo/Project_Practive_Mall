@@ -49,7 +49,6 @@ public class SkuInfoController {
     //@RequiresPermissions("mall_goods:skuinfo:info")
     public R info(@PathVariable("skuId") Long skuId){
 		SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
-
         return R.ok().put("skuInfo", skuInfo);
     }
 
@@ -60,7 +59,6 @@ public class SkuInfoController {
     //@RequiresPermissions("mall_goods:skuinfo:save")
     public R save(@RequestBody SkuInfoEntity skuInfo){
 		skuInfoService.save(skuInfo);
-
         return R.ok();
     }
 

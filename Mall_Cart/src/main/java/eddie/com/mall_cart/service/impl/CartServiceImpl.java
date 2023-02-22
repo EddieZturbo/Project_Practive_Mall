@@ -54,7 +54,7 @@ public class CartServiceImpl implements CartService {
             CompletableFuture<Void> goodsInfoFuture = CompletableFuture.runAsync(() -> {//异步编排 启动一个异步线程进行远程调用服务的操作
                 //若redis中不存在就进行远程调用商品服务根据skuId查找指定的商品信息并存储到redis中
                 R info = goodsOpenFeign.info(skuId);
-                SkuInfoVo skuInfoVo = info.getData("attr", new TypeReference<SkuInfoVo>() {
+                SkuInfoVo skuInfoVo = info.getData("skuInfo", new TypeReference<SkuInfoVo>() {
                 });
                 cartItemVo.setSkuId(skuInfoVo.getSkuId());
                 cartItemVo.setTitle(skuInfoVo.getSkuTitle());

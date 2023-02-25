@@ -28,7 +28,7 @@
                     <a th:if="${session.loginUser != null}">欢迎, [[${session.loginUser.nickname}]]</a>
                 </li>
                 <li>
-                    <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/regist" style="color: red;">免费注册</a>
+                    <a th:if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/regist" style="color: red;">免费注册</a>
                 </li>
                 <li class="spacer"></li>
                 <li><a href="http://order.zhangjinhao.com/list.html">我的订单</a></li>
@@ -48,7 +48,7 @@
         <div class="one_search_top">
             <div class="one_top_left">
                 <a href="http://zhangjinhao.com" class="one_left_logo"><img src="/static/cart/img/logo1.jpg"></a>
-                <a href="http://cart.zhangjinhao.com/cartList" class="one_left_link">购物车</a>
+                <a href="http://cart.zhangjinhao.com/" class="one_left_link">购物车</a>
             </div>
             <div class="one_top_right">
                 <input type="text" class="one_right_txt" placeholder="" onfocus="this.placeholder=''"
@@ -56,10 +56,10 @@
                 <input type="button" value="搜索" class="one_right_btn">
             </div>
         </div>
-        <div class="one_search_load" if="${session.loginUser == null}">
+        <div class="one_search_load" th:if="${session.loginUser == null}">
             <img src="/static/cart/img/shop_07.jpg" class="one_load_wraing">
             <span>您还没有登录！登录后购物车的商品将保存到您账号中</span>
-            <a href="http://auth.zhangjinhao.com/login"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
+            <a href="#"><input type="button" onclick="login()" value="立即登录" class="one_load_btn"></a>
         </div>
     </div>
 </div>
@@ -84,41 +84,41 @@
         </div>
 
         <div class="One_ShopCon">
-            <h1 if="${cart.items == null}">
+            <h1 th:if="${cart.items == null}">
                 购物车还没有商品，<a href="http://zhangjinhao.com/">去购物</a>
             </h1>
-            <ul if="${cart.items != null}">
-                <li each="item:${cart.items}">
+            <ul th:if="${cart.items != null}">
+                <li th:each="item:${cart.items}">
                     <div>
                     </div>
                     <div>
                         <ol>
-                            <li><input type="checkbox" attr="skuId=${item.skuId}" class="itemChecked" checked="${item.check}"></li>
+                            <li><input type="checkbox" th:attr="skuId=${item.skuId}" class="itemChecked" th:checked="${item.check}"></li>
                             <li>
-                                <dt><img src="${item.image}" alt=""></dt>
-                                <dd style="wid 300px;">
+                                <dt><img th:src="${item.image}" alt=""></dt>
+                                <dd style="width: 300px;">
                                     <p>
-                                        <span text="${item.title}">TCL 55A950C 55英寸32核</span>
+                                        <span th:text="${item.title}">TCL 55A950C 55英寸32核</span>
                                         <br/>
-                                        <span each="attr:${item.skuAttrValues}" text="${attr}">尺码: 55时 超薄曲面 人工智能</span>
+                                        <span th:each="attr:${item.skuAttrValues}" th:text="${attr}">尺码: 55时 超薄曲面 人工智能</span>
                                     </p>
                                 </dd>
                             </li>
                             <li>
-                                <p class="dj" text="'￥' + ${#numbers.formatDecimal(item.price,3,2)}">￥4599.00</p>
+                                <p class="dj" th:text="'￥' + ${#numbers.formatDecimal(item.price,3,2)}">￥4599.00</p>
 
                             </li>
                             <li>
-                                <p attr="skuId=${item.skuId}">
+                                <p th:attr="skuId=${item.skuId}">
                                     <span class="countOpsBtn">-</span>
-                                    <span class="countOpsNum" text="${item.count}">5</span>
+                                    <span class="countOpsNum" th:text="${item.count}">5</span>
                                     <span class="countOpsBtn">+</span>
                                 </p>
 
                             </li>
-                            <li style="font-weight:bold"><p class="zj"></p></li>
+                            <li style="font-weight:bold"><p class="zj">￥[[${#numbers.formatDecimal(item.totalPrice,3,2)}]]</p></li>
                             <li>
-                                <p class="deleteItemBtn" attr="skuId=${item.skuId}">删除</p>
+                                <p class="deleteItemBtn" th:attr="skuId=${item.skuId}">删除</p>
                             </li>
                         </ol>
                     </div>
@@ -145,8 +145,8 @@
             </div>
             <div>
                 <ol>
-                    <li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt"></span>
-                    <li>优惠：</li>
+                    <li>总价:<span style="color:#e64346;font-weight:bold;font-size:16px;" class="fnt">￥[[${#numbers.formatDecimal(cart.totalAmount, 3, 2)}]]</span>
+                    <li>优惠：￥[[${#numbers.formatDecimal(cart.reduce,1,2)}]]</li>
                 </ol>
             </div>
             <div>
@@ -223,12 +223,12 @@
     }
 
     function toItem(skuId) {
-        window.location.href = "http://item.gmall.com:8084/" + skuId + ".html";
+        window.location.href = "http://item.zhangjinhao.com:8000/" + skuId + ".html";
     }
 
     function login() {
-        var s = encodeURIComponent("http://cart.zhangjinhao.com/cartList");
-        window.location.href = "http://auth.zhangjinhao.com/login.html";
+        var s = encodeURIComponent("http://cart.zhangjinhao.com:10025/cartList");
+        window.location.href = "http://auth.zhangjinhao.com/login";
     }
 
     function checkSku(chkbox) {

@@ -1,7 +1,7 @@
 package eddie.com.mall_cart.service;
 
-import com.baomidou.mybatisplus.extension.service.IService;
 import eddie.com.mall_cart.vo.CartItemVo;
+import eddie.com.mall_cart.vo.CartVo;
 
 import java.util.concurrent.ExecutionException;
 
@@ -20,4 +20,14 @@ public interface CartService {
     CartItemVo addToCart(Long skuId, Integer num) throws ExecutionException, InterruptedException;
 
     CartItemVo getCartItemBySkuId(Long skuId);
+
+    CartVo getCart() throws ExecutionException, InterruptedException;
+
+    void checkItem(Long skuId, Integer checked);
+
+    CartItemVo getCartItem(Long skuId);
+
+    void deleteItem(Long skuId);
+
+    void countItem(Long skuId, Integer num);
 }

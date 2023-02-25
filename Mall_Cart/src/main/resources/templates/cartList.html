@@ -24,12 +24,11 @@
             </ul>
             <ul class="header-right">
                 <li>
-                    <a if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/login" class="li_2">你好，请登录</a>
-                    <a if="${session.loginUser != null}">欢迎, </a>
+                    <a th:if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/login" class="li_2">请登录</a>
+                    <a th:if="${session.loginUser != null}">欢迎, [[${session.loginUser.nickname}]]</a>
                 </li>
                 <li>
-                    <a if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/regist"
-                       style="color: red;">免费注册</a>
+                    <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/regist" style="color: red;">免费注册</a>
                 </li>
                 <li class="spacer"></li>
                 <li><a href="http://order.zhangjinhao.com/list.html">我的订单</a></li>

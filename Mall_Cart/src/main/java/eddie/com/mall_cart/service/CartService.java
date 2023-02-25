@@ -18,4 +18,6 @@ public interface CartService {
      * @return
      */
     CartItemVo addToCart(Long skuId, Integer num) throws ExecutionException, InterruptedException;
+
+    CartItemVo getCartItemBySkuId(Long skuId);
 }

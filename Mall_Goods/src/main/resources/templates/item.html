@@ -59,14 +59,12 @@
             </ul>
             `
             <ul class="header_ul_right">
-                <li style="border: 0;">
-                    <a th:if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/login.html"
-                       class="aa">你好，请登录</a>
+                <li>
+                    <a th:if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/login" class="li_2">请登录</a>
                     <a th:if="${session.loginUser != null}">欢迎, [[${session.loginUser.nickname}]]</a>
                 </li>
                 <li>
-                    <a th:if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/reg.html"
-                       style="color: red;">免费注册</a>
+                    <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/regist" style="color: red;">免费注册</a>
                 </li>
                 <li><a href="http://member.zhangjinhao.com/memberOrder.html" class="aa">我的订单</a> |</li>
                 <li class="jingdong"><a href="/static/item/javascript:;">我的京东</a><span

@@ -90,6 +90,19 @@ public class CartServiceImpl implements CartService {
     }
 
     /**
+     * 根据skuId到redis中查询购物车中指定的item数据
+     * @param skuId
+     * @return
+     */
+    @Override
+    public CartItemVo getCartItemBySkuId(Long skuId) {
+        BoundHashOperations<String, Object, Object> cartOps = getCartOps();
+        String itemDataString = (String) cartOps.get(skuId.toString());
+        CartItemVo cartItemVo = JSON.parseObject(itemDataString, CartItemVo.class);
+        return cartItemVo;
+    }
+
+    /**
      * redis中hashKey的绑定操作
      * @return
      */

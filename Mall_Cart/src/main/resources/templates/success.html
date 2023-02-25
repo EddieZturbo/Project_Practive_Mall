@@ -30,10 +30,8 @@
                 <a th:if="${session.loginUser != null}">欢迎, [[${session.loginUser.nickname}]]</a>
             </li>
             <li>
-                <a th:if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/regist" style="color: red;">免费注册</a>
+                <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/regist" style="color: red;">免费注册</a>
             </li>
-
-            <li>
                 <a href="/javascript:;">我的订单</a>
             </li>
 

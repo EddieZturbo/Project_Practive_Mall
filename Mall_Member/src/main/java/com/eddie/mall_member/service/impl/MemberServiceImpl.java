@@ -63,6 +63,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         memberEntity.setMobile(vo.getPhone());
         memberEntity.setGender(0);
         memberEntity.setCreateTime(new Date());
+        memberEntity.setNickname(vo.getUserName().toLowerCase());
         //保存数据
         this.baseMapper.insert(memberEntity);
     }

@@ -184,7 +184,7 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      * @return
      */
     public Map<String, List<Catalog2Vo>> getCatalogJsonFromDBWithRedissonLock(){
-        RLock lock = redissonClient.getLock("catalogJson-lock");//指定分布式锁的名字 锁的名字觉得锁的粒度
+        RLock lock = redissonClient.getLock("catalogJson-lock");//指定分布式锁的名字 锁的名字决定锁的粒度
         lock.lock();//加锁
         log.info("使用Redisson 加锁成功");
         Map<String, List<Catalog2Vo>> catalogJsonFromDB;

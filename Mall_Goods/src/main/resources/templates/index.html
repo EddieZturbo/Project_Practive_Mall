@@ -95,10 +95,11 @@
   					</b>
         <ul>
           <li>
-            <a href="http://auth.zhangjinhao.com/login">你好，请登录</a>
+            <a th:if="${session.loginUser == null}" href="http://auth.zhangjinhao.com/login" class="li_2">请登录</a>
+            <a th:if="${session.loginUser != null}">欢迎, [[${session.loginUser.nickname}]]</a>
           </li>
           <li>
-            <a href="http://auth.zhangjinhao.com/regist" class="li_2">免费注册</a>
+            <a th:if="${session.loginUser == null}" href="http://auth.gulimall.com/regist" style="color: red;">免费注册</a>
           </li>
           <span>|</span>
           <li>

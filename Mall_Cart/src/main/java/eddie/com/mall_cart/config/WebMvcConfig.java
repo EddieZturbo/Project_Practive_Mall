@@ -12,14 +12,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-    /**
-     * TODO 视图处理器（只负责跳转页面 没有别的业务操作的 进行视图跳转）
-     * @param registry
-     */
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("cartList");
-    }
 
     /**
      * TODO 在WebMvcConfig中addInterceptors配置拦截器 并指定拦截器拦截的范围

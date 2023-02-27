@@ -1,10 +1,10 @@
 package eddie.com.mall_cart.interceptor;
 
-import com.eddie.common.constant.AuthServerConstant;
 import com.eddie.common.constant.CartConstant;
 import com.eddie.common.vo.MemberResponseVo;
 import eddie.com.mall_cart.to.UserInfoTo;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -19,6 +19,7 @@ import static com.eddie.common.constant.AuthServerConstant.LOGIN_USER;
  @author EddieZhang
  @create 2023-02-17 9:37 PM
  */
+@Component
 public class UserCartInterceptor implements HandlerInterceptor {
     public static ThreadLocal<UserInfoTo> threadLocal = new ThreadLocal<>();
 

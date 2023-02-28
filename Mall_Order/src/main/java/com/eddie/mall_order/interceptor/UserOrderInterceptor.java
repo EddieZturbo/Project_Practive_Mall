@@ -15,7 +15,7 @@ import static com.eddie.common.constant.AuthServerConstant.LOGIN_USER;
  */
 @Component
 public class UserOrderInterceptor implements HandlerInterceptor {
-    ThreadLocal<MemberResponseVo> threadLocal = new ThreadLocal<>();
+    public static ThreadLocal<MemberResponseVo> threadLocal = new ThreadLocal<>();
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //从session中获取用户的登录状态

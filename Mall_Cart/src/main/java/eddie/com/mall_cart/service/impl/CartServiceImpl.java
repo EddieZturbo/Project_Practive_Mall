@@ -3,6 +3,7 @@ package eddie.com.mall_cart.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.eddie.common.utils.R;
+import eddie.com.mall_cart.exception.CartExceptionHandler;
 import eddie.com.mall_cart.feign.GoodsOpenFeign;
 import eddie.com.mall_cart.interceptor.UserCartInterceptor;
 import eddie.com.mall_cart.service.CartService;
@@ -16,6 +17,8 @@ import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -136,7 +139,7 @@ public class CartServiceImpl implements CartService {
             String loginUserKey = CART_PREFIX + userInfoTo.getUserId();//登录用户在redis中绑定的key
             //判断是否有临时用户的购物车数据 若有则合并到登录用户的购物车中
             List<CartItemVo> cartItems = getCartItems(tempUserKey);
-            if(null != cartItems && cartItems.size() > 0){
+            if (null != cartItems && cartItems.size() > 0) {
                 for (CartItemVo item ://遍历获取到的临时用户的购物车的所有购物项 合并到登录用户的购物车中
                         cartItems) {
                     this.addToCart(item.getSkuId(), item.getCount());
@@ -154,6 +157,7 @@ public class CartServiceImpl implements CartService {
         }
         return cartVo;
     }
+
     /**
      * 根据key（登录用户或者临时用户）获取redis中储存的购物车所有的数据项
      * @param cartKey
@@ -188,7 +192,7 @@ public class CartServiceImpl implements CartService {
         //将修改好状态的对象的序列化String储存到redis中
         String jsonString = JSON.toJSONString(cartItem);
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();//获取redis的hash操作
-        cartOps.put(skuId.toString(),jsonString);
+        cartOps.put(skuId.toString(), jsonString);
     }
 
     /**
@@ -227,7 +231,36 @@ public class CartServiceImpl implements CartService {
         //将修改好数量的商品项对象的序列化String储存到redis中
         String jsonString = JSON.toJSONString(cartItem);
         BoundHashOperations<String, Object, Object> cartOps = getCartOps();
-        cartOps.put(skuId.toString(),jsonString);
+        cartOps.put(skuId.toString(), jsonString);
+    }
+
+    @Override
+    public List<CartItemVo> getUserCartItems() {
+        List<CartItemVo> cartItemVoList;
+        //获取当前用户的信息
+        UserInfoTo userInfoTo = UserCartInterceptor.threadLocal.get();
+        if (null == userInfoTo) {//用户未登录直接返回null
+            return null;
+        } else {
+            String cartKey = CART_PREFIX + userInfoTo.getUserId();//登录用户的购物车cartKey
+            List<CartItemVo> cartItems = getCartItems(cartKey);
+            if (null == cartItems) {//查询没有数据 抛出异常
+                throw new CartExceptionHandler();
+            } else {
+                //要筛选出勾选中的购物项
+                cartItemVoList = cartItems.stream()
+                        .filter((item) -> {
+                            return item.getCheck();/*进行filter只留下check为true的 即勾选中的*/
+                        })
+                        .map((item) -> {
+                            BigDecimal price = goodsOpenFeign.getPriceBySkuId(item.getSkuId());
+                            item.setPrice(price);
+                            return item;
+                        })//远程调用goods服务查询当前商品的最新价格数据 确保结算时使用的是最新的价格
+                        .collect(Collectors.toList());
+            }
+            return cartItemVoList;
+        }
     }
 
 

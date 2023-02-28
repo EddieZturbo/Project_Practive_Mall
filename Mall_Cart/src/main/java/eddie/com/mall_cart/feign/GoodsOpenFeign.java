@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -29,4 +30,12 @@ public interface GoodsOpenFeign {
      */
     @GetMapping("/mall_goods/skusaleattrvalue/stringList/{skuId}")
     public List<String> getSkuSaleAttrValues(@PathVariable("skuId") Long skuId);
+
+    /**
+     * 远程调用商品服务根据skuId获取到商品的价格
+     * @param skuId
+     * @return
+     */
+    @GetMapping(value = "/mall_goods/skuinfo/{skuId}/price")
+    BigDecimal getPriceBySkuId(@PathVariable("skuId") Long skuId);
 }

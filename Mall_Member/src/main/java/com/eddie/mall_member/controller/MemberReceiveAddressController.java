@@ -1,14 +1,13 @@
 package com.eddie.mall_member.controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.eddie.mall_member.vo.FareVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.eddie.mall_member.entity.MemberReceiveAddressEntity;
 import com.eddie.mall_member.service.MemberReceiveAddressService;
@@ -29,6 +28,23 @@ import com.eddie.common.utils.R;
 public class MemberReceiveAddressController {
     @Autowired
     private MemberReceiveAddressService memberReceiveAddressService;
+
+    /**
+     * 根据收货地址计算运费
+     * @param addrId
+     * @return
+     */
+    @GetMapping("/deliveryFare")
+    public R deliveryFare(@RequestParam("addrId") Long addrId){
+        FareVo fare = memberReceiveAddressService.deliveryFare(addrId);
+        return R.ok().setData(fare);
+    }
+
+    @GetMapping("/{memberId}/address")
+    public List<MemberReceiveAddressEntity> addressEntityList(@PathVariable("memberId") Long memberId){
+        List<MemberReceiveAddressEntity> addressEntityList = memberReceiveAddressService.getAddressByMemberId(memberId);
+        return addressEntityList;
+    }
 
     /**
      * 列表

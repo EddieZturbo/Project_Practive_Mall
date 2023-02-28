@@ -3,7 +3,9 @@ package com.eddie.mall_member.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.mall_member.entity.MemberReceiveAddressEntity;
+import com.eddie.mall_member.vo.FareVo;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +18,9 @@ import java.util.Map;
 public interface MemberReceiveAddressService extends IService<MemberReceiveAddressEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<MemberReceiveAddressEntity> getAddressByMemberId(Long memberId);
+
+    FareVo deliveryFare(Long addrId);
 }
 

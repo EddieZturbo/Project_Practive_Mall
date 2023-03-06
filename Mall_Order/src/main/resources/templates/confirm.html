@@ -980,7 +980,7 @@
 
         highlightAddress();
         var addrId = $(".addr-item p[def='1']").attr("addrId");
-        getFare(addrId)
+        getFare(addrId);
     });
 
 
@@ -1010,7 +1010,7 @@
             $("#fare").text(resp.data.fare);
             var total = [[${orderConfirmData.total}]];
 
-            var payPrice = total * 1 + resp.data.fare * 1;
+            var payPrice = (total * 1 + resp.data.fare * 1);
             //设置运费
             $("#payPrice").text(payPrice);
             $("#payPriceInput").val(payPrice);

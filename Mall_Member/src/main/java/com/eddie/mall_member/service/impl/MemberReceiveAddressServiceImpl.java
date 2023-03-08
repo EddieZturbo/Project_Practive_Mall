@@ -50,23 +50,5 @@ public class MemberReceiveAddressServiceImpl extends ServiceImpl<MemberReceiveAd
         return addressEntityList;
     }
 
-    /**
-     * 根据地址id模拟计算出运费
-     * @param addrId
-     * @return
-     */
-    @Override
-    public FareVo deliveryFare(Long addrId) {
-        FareVo fareVo = new FareVo();
-        MemberReceiveAddressEntity memberReceiveAddressEntity = memberReceiveAddressService.getById(addrId);
-        if (null != memberReceiveAddressEntity) {
-            String phone = memberReceiveAddressEntity.getPhone();
-            String fare = phone.substring(phone.length() - 1, phone.length());//模拟计算运费（截取phone的最后一位用作运费）
-            fareVo.setFare(new BigDecimal(fare));
-            fareVo.setAddress(memberReceiveAddressEntity);
-            return fareVo;
-        }
-        return null;
-    }
 
 }

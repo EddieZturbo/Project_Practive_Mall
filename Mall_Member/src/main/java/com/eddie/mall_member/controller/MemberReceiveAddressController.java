@@ -29,16 +29,6 @@ public class MemberReceiveAddressController {
     @Autowired
     private MemberReceiveAddressService memberReceiveAddressService;
 
-    /**
-     * 根据收货地址计算运费
-     * @param addrId
-     * @return
-     */
-    @GetMapping("/deliveryFare")
-    public R deliveryFare(@RequestParam("addrId") Long addrId){
-        FareVo fare = memberReceiveAddressService.deliveryFare(addrId);
-        return R.ok().setData(fare);
-    }
 
     @GetMapping("/{memberId}/address")
     public List<MemberReceiveAddressEntity> addressEntityList(@PathVariable("memberId") Long memberId){
@@ -62,10 +52,8 @@ public class MemberReceiveAddressController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("mall_member:memberreceiveaddress:info")
     public R info(@PathVariable("id") Long id){
 		MemberReceiveAddressEntity memberReceiveAddress = memberReceiveAddressService.getById(id);
-
         return R.ok().put("memberReceiveAddress", memberReceiveAddress);
     }
 

@@ -45,6 +45,11 @@ public class SpuInfoEntity implements Serializable {
 	 */
 	private Long brandId;
 	/**
+	 * 品牌名
+	 */
+	@TableField(exist = false)
+	private String brandName;
+	/**
 	 * 
 	 */
 	private BigDecimal weight;

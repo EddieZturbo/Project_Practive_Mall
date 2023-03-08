@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @MapperScan("com.eddie.mall_goods.dao")
 @EnableRedisHttpSession//整合SpringSession同时指定redis作为持久化的启动注解
@@ -14,6 +15,7 @@ import org.springframework.session.data.redis.config.annotation.web.http.EnableR
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"com.eddie.mall_goods.feign"})
 @EnableCaching//启动Spring Cache
+@EnableTransactionManagement
 public class MallGoodsApplication {
 
     public static void main(String[] args) {

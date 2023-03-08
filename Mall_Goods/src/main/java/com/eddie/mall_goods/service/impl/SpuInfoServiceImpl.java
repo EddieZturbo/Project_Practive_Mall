@@ -335,17 +335,31 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
 
         //TODO 将数据发送给ElasticSearch进行保存
         R saveGoods = searchOpenFeign.saveGoods(skuEsModelList);
-        if(saveGoods.getCode() == 0){
+        if (saveGoods.getCode() == 0) {
             //远程调用成功
             //修改pms_spu_info表中的publish_status字段(上架状态[0 - 下架，1 - 上架])
             SpuInfoEntity spuInfoEntity = this.getById(spuId);
             spuInfoEntity.setPublishStatus(ProductConstant.StatusEnum.UP_SPU.getCode());
             this.updateById(spuInfoEntity);
-        }else{
+        } else {
             //远程调用失败
             //TODO 重复调用问题（接口幂等性）重试机制
 
         }
+    }
+
+    @Override
+    public SpuInfoEntity getSpuInfoBySkuId(Long skuId) {
+        //先查询sku表里的数据
+        SkuInfoEntity skuInfoEntity = skuInfoService.getById(skuId);
+        //获得spuId
+        Long spuId = skuInfoEntity.getSpuId();
+        //再通过spuId查询spuInfo信息表里的数据
+        SpuInfoEntity spuInfoEntity = this.baseMapper.selectById(spuId);
+        //查询品牌表的数据获取品牌名
+        BrandEntity brandEntity = brandService.getById(spuInfoEntity.getBrandId());
+        spuInfoEntity.setBrandName(brandEntity.getName());
+        return spuInfoEntity;
     }
 
 

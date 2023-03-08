@@ -21,6 +21,5 @@ public interface MemberReceiveAddressService extends IService<MemberReceiveAddre
 
     List<MemberReceiveAddressEntity> getAddressByMemberId(Long memberId);
 
-    FareVo deliveryFare(Long addrId);
 }
 

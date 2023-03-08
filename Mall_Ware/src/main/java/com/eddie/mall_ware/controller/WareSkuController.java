@@ -5,12 +5,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.eddie.common.to.SkuHasStockTo;
+import com.eddie.mall_ware.vo.WareSkuLockVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.eddie.mall_ware.entity.WareSkuEntity;
 import com.eddie.mall_ware.service.WareSkuService;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.common.utils.R;
+
+import static com.eddie.common.exception.BizCodeEnum.NO_STOCK_EXCEPTION;
 
 
 /**
@@ -26,6 +29,24 @@ public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
 
+    /**
+     * 锁定库存方法
+     * 库存解锁的场景
+     *      *      1）、下订单成功，订单过期没有支付被系统自动取消或者被用户手动取消，都要解锁库存
+     *      *      2）、下订单成功，库存锁定成功，接下来的业务调用失败，导致订单回滚。之前锁定的库存就要自动解锁
+     * @param vo
+     * @return
+     */
+    @PostMapping("/lock/order")
+    public R orderLockStock(@RequestBody WareSkuLockVo vo) {
+        try {
+            boolean lockStock = wareSkuService.orderLockStock(vo);
+            return R.ok().setData(lockStock);
+        } catch (Exception e) {
+            return R.error(NO_STOCK_EXCEPTION.getCode(), NO_STOCK_EXCEPTION.getMessage());
+        }
+    }
+
 
     /**
      * 根据skuId查看是否有库存
@@ -35,7 +56,7 @@ public class WareSkuController {
     @PostMapping("/hasStock")
     public R getSkuHasStock(@RequestBody List<Long> skuIds) {
         List<SkuHasStockTo> skuHasStockToList = wareSkuService.skuHasStock(skuIds);
-        return R.ok().put("data",skuHasStockToList);
+        return R.ok().put("data", skuHasStockToList);
     }
 
     /**

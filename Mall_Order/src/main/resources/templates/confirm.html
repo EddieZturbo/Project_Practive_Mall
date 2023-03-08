@@ -1005,7 +1005,7 @@
     function getFare(addrId) {
         //给表单回填选择的地址
         $("#addrInput").val(addrId);
-        $.get("http://zhangjinhao.com/api/mall_member/memberreceiveaddress/deliveryFare?addrId=" + addrId, function (resp) {
+        $.get("http://zhangjinhao.com/api/mall_ware/wareinfo/fare?addrId=" + addrId, function (resp) {
             console.log(resp);
             $("#fare").text(resp.data.fare);
             var total = [[${orderConfirmData.total}]];

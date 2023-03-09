@@ -15,17 +15,6 @@ import java.util.HashMap;
 public class MyRabbitMQConfig {
 
     /**
-     * 使用JSON序列化机制，进行消息转换
-     * @return
-     */
-    @Bean
-    public MessageConverter messageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
-
-
-    /**
      * 库存服务默认的交换机
      * @return
      */

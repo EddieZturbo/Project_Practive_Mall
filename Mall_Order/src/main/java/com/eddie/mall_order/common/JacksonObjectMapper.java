@@ -30,6 +30,7 @@ public class JacksonObjectMapper extends ObjectMapper {
     public static final String DEFAULT_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
 
+
     public JacksonObjectMapper() {
         super();
         //收到未知属性时不报异常

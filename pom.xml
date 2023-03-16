@@ -29,6 +29,7 @@
         <module>Mall_Search</module>
         <module>Mall_Auth-Server</module>
         <module>Mall_Cart</module>
+        <module>Mall_SecKill</module>
     </modules>
 
 </project>

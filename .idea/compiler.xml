@@ -14,6 +14,7 @@
         <module name="Mall_Gateway" />
         <module name="Mall_Order" />
         <module name="renren-generator" />
+        <module name="Mall_SecKill" />
         <module name="Mall_Goods" />
         <module name="Mall_Member" />
         <module name="Mall_Third-Party" />
@@ -34,6 +35,7 @@
       <module name="Mall_Member" target="1.8" />
       <module name="Mall_Order" target="1.8" />
       <module name="Mall_Search" target="1.8" />
+      <module name="Mall_SecKill" target="1.8" />
       <module name="Mall_Third-Party" target="1.8" />
       <module name="Mall_Ware" target="1.8" />
       <module name="Project_Practive_Mall" target="1.8" />
@@ -52,6 +54,7 @@
       <module name="Mall_Member" options="-parameters" />
       <module name="Mall_Order" options="-parameters" />
       <module name="Mall_Search" options="-parameters" />
+      <module name="Mall_SecKill" options="-parameters" />
       <module name="Mall_Third-Party" options="-parameters" />
       <module name="Mall_Ware" options="-parameters" />
       <module name="renren-fast" options="-parameters" />

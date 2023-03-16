@@ -1,5 +1,7 @@
 package com.eddie.mall_coupon.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -18,9 +20,15 @@ public class SeckillSkuRelationServiceImpl extends ServiceImpl<SeckillSkuRelatio
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        LambdaQueryWrapper<SeckillSkuRelationEntity> queryWrapper = new LambdaQueryWrapper<SeckillSkuRelationEntity>();
+        String promotionSessionId = (String) params.get("promotionSessionId");
+        //如果前端的查询携带了promotionSessionId这表明查询指定promotionSessionId的数据
+        if(StringUtils.isNotEmpty(promotionSessionId)){
+            queryWrapper.eq(SeckillSkuRelationEntity::getPromotionSessionId,promotionSessionId);
+        }
+        //若前端的查询请求未携带promotionSessionId则表明查询所有的数据z
         IPage<SeckillSkuRelationEntity> page = this.page(
-                new Query<SeckillSkuRelationEntity>().getPage(params),
-                new QueryWrapper<SeckillSkuRelationEntity>()
+                new Query<SeckillSkuRelationEntity>().getPage(params),queryWrapper
         );
 
         return new PageUtils(page);

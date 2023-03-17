@@ -27,12 +27,6 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-data-redis</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.redisson</groupId>
-                    <artifactId>redisson-spring-boot-starter</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!--Thymeleaf视图渲染-->
         <dependency>
@@ -48,25 +42,23 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-            <!--TODO 底层使用lettuce-core客户端 io.netty 会导致堆外内存溢出（若未指定堆外内存则默认为我们设定的Xmx100m） 解决 方式①升级lettuce 方式②切换至jedis（并发稍弱）-->
             <exclusions>
                 <exclusion>
-                    <groupId>org.redisson</groupId>
-                    <artifactId>redisson-spring-boot-starter</artifactId>
+                    <groupId>io.lettuce</groupId>
+                    <artifactId>lettuce-core</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--Redisson 分布式锁框架-->
+        <!-- 排除了lettuce-core 引用jedis -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+        </dependency>
+        <!-- 使用Redisson作为所有分布式锁 -->
         <dependency>
             <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.14.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.session</groupId>
-                    <artifactId>spring-session-data-redis</artifactId>
-                </exclusion>
-            </exclusions>
+            <artifactId>redisson</artifactId>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

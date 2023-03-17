@@ -1,14 +1,11 @@
 package com.eddie.mall_coupon.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.eddie.mall_coupon.entity.SeckillSessionEntity;
 import com.eddie.mall_coupon.service.SeckillSessionService;
@@ -29,6 +26,16 @@ import com.eddie.common.utils.R;
 public class SeckillSessionController {
     @Autowired
     private SeckillSessionService seckillSessionService;
+
+    /**
+     * 获取最近三天的秒杀活动信息
+     * @return
+     */
+    @GetMapping("/Lates3DaySession")
+    public R getLates3DaySession(){
+        List<SeckillSessionEntity> seckillSessionEntities = seckillSessionService.getLates3DaySession();
+        return R.ok().setData(seckillSessionEntities);
+    }
 
     /**
      * 列表

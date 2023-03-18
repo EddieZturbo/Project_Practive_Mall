@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import lombok.Data;
 
 /**
@@ -12,7 +13,7 @@ import lombok.Data;
  * 
  * @author Eddie
  * @email 20001207@iCloud.com
- * @date 2022-12-16 20:49:50
+ * @Date 2022-12-16 20:49:50
  */
 @Data
 @TableName("sms_coupon_history")

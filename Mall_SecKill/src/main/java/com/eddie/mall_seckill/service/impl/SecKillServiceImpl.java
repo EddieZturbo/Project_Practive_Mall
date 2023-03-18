@@ -9,15 +9,19 @@ import com.eddie.mall_seckill.service.SecKillService;
 import com.eddie.mall_seckill.to.SeckillSkuRedisTo;
 import com.eddie.mall_seckill.vo.SeckillSessionWithSkusVo;
 import com.eddie.mall_seckill.vo.SkuInfoVo;
+import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RSemaphore;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.BoundHashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -26,12 +30,13 @@ import java.util.stream.Collectors;
  @create 2023-03-17 9:19 AM
  */
 @Service
+@Slf4j
 public class SecKillServiceImpl implements SecKillService {
     private static final String SECKILL_SESSION_PREFIX = "seckill:sessions:";//redis的key--秒杀活动的key
     private static final String SECKILL_SKUS_PREFIX = "seckill:skus:";//redis的key--秒杀活动参与秒杀的所有商品的key
     private static final String SKU_STOCK_SEMAPHORE = "seckill:stock:semaphore:";    //+商品随机码
     @Autowired
-    RedisTemplate redisTemplate;
+    StringRedisTemplate redisTemplate;
     @Autowired
     CouponOpenFeign couponOpenFeign;
     @Autowired
@@ -63,6 +68,53 @@ public class SecKillServiceImpl implements SecKillService {
     }
 
     /**
+     * 获取当前参加秒杀的商品信息
+     * @return
+     */
+    @Override
+    public List<SeckillSkuRedisTo> getCurrentSecKillSkus() {
+        //根据当前时间 判断哪些场次进行秒杀(判断当前系统时间戳是否在某个秒杀场次的时间范围中)
+        long time = new Date().getTime();//获取当前的系统时间戳
+
+        //从redis中获取所有的场次和关联的商品信息
+        //获取seckill:sessions:开头的所有key
+        Set<String> keys = redisTemplate.keys(SECKILL_SESSION_PREFIX + "*");
+        if (keys != null && keys.size() > 0) {
+            //遍历所有key(seckill:sessions:1679119200000-1678950000000)
+            for (String key : keys) {
+                //截取key 获取start时间和end时间
+                String replace = key.replace(SECKILL_SESSION_PREFIX, "");//将seckill:sessions:替换成空串
+                log.info("前缀去除后==>" + replace);
+                //1679119200000-1678950000000
+                String[] split = replace.split("-");//将key依据-进行划分
+                long startTime = Long.parseLong(split[0]);//开始时间戳
+                long endTime = Long.parseLong(split[1]);//结束时间戳
+
+                //判断当前时间是否在秒杀场次的开始时间戳和结束时间戳之间
+                if (startTime <= time && time <= endTime) {
+                    //获取当前秒杀场次关联的所有商品
+                    List<String> range = redisTemplate.opsForList().range(key, -100, 100);
+                    BoundHashOperations<String, String, String> hashOps = redisTemplate.boundHashOps(SECKILL_SKUS_PREFIX);
+                    assert range != null;//断言
+                    List<String> listValues = hashOps.multiGet(range);
+                    if (listValues != null && listValues.size() > 0) {
+                        //将redis中获取到的秒杀商品的详情封装为前端展示的to数据
+                        List<SeckillSkuRedisTo> seckillSkuRedisTos = listValues.stream()
+                                .map(item -> {
+                                    SeckillSkuRedisTo seckillSkuRedisTo = JSON.parseObject(item, SeckillSkuRedisTo.class);
+                                    return seckillSkuRedisTo;
+                                })
+                                .collect(Collectors.toList());
+                        return seckillSkuRedisTos;
+                    }
+                    break;//结束本次for循环
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * 缓存活动相关联的商品信息(Hash数据类型进行储存)
      * @param seckillSessionWithSkusVos
      */
@@ -77,7 +129,7 @@ public class SecKillServiceImpl implements SecKillService {
                         //生成秒杀商品的随机码 防止恶意攻击
                         String token = UUID.randomUUID().toString().replace("_", "");
                         //定义储存到redis中的key promotionId-skuId
-                        String key = relationSku.getPromotionId() + "-" + relationSku.getSkuId();
+                        String key = relationSku.getPromotionSessionId() + "-" + relationSku.getSkuId();
                         if (!ops.hasKey(key)) {//判断redis中是否已经有key了
                             //redis中没有key才进行储存
                             //缓存商品信息
@@ -87,7 +139,7 @@ public class SecKillServiceImpl implements SecKillService {
                             R info = goodsOpenFeign.info(relationSku.getSkuId());
                             if (info.getCode() == 0) {
                                 //调用成功将获取的skuInfoVo数据封装到to对象中
-                                SkuInfoVo skuInfoVo = info.getData("data", new TypeReference<SkuInfoVo>() {
+                                SkuInfoVo skuInfoVo = info.getData("skuInfo", new TypeReference<SkuInfoVo>() {
                                 });
                                 redisTo.setSkuInfo(skuInfoVo);
                             }
@@ -134,9 +186,9 @@ public class SecKillServiceImpl implements SecKillService {
                         //获取活动中所有的商品的skuId
                         List<String> skuIds = sessionWithSkusVo.getRelationSkus().stream()
                                 //格式为promotionSessionId（活动场次id）_skuId（商品id）
-                                .map(relationSku -> relationSku.getPromotionSessionId() + "_" + relationSku.getSkuId())
+                                .map(relationSku -> relationSku.getPromotionSessionId() + "-" + relationSku.getSkuId())
                                 .collect(Collectors.toList());
-                        redisTemplate.opsForList().leftPush(key, skuIds);//以List的数据格式储存到redis中
+                        redisTemplate.opsForList().leftPushAll(key, skuIds);//以List的数据格式储存到redis中
                     }
                 });
     }

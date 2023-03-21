@@ -1,8 +1,11 @@
 package com.eddie.mall_goods.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.eddie.common.utils.R;
 import com.eddie.mall_goods.entity.SkuImagesEntity;
 import com.eddie.mall_goods.entity.SpuInfoDescEntity;
+import com.eddie.mall_goods.feign.SecKillOpenFeign;
 import com.eddie.mall_goods.service.*;
 import com.eddie.mall_goods.vo.SeckillSkuVo;
 import com.eddie.mall_goods.vo.SkuItemSaleAttrVo;
@@ -47,6 +50,9 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     ThreadPoolExecutor threadPoolExecutor;
+
+    @Autowired
+    SecKillOpenFeign secKillOpenFeign;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -104,6 +110,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         return new PageUtils(page);
     }
 
+    /**
+     * 根据skuId获取当前商品项的所有详细信息
+     * @param skuId
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @Override
     public SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException {
         SkuItemVo skuItemVo = new SkuItemVo();
@@ -137,6 +150,23 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         }, threadPoolExecutor);
 
 
+        CompletableFuture<Void> secKillInfoFuture = CompletableFuture.runAsync(() -> {
+            //6、获取sku的秒杀信息(等★完成后异步执行)
+            //远程调用秒杀服务查看当前sku商品是否参加秒杀活动
+            R skuSecKillInfoBySkuId = secKillOpenFeign.getSkuSecKillInfoBySkuId(skuId);
+            if (skuSecKillInfoBySkuId.getCode() == 0) {
+                //查询成功
+                SeckillSkuVo info = skuSecKillInfoBySkuId.getData("data", new TypeReference<SeckillSkuVo>() {
+                });
+                //如果当前获取的info不为null且当前系统时间还在活动结束前则返回秒活动信息 否则不进行属性封装
+                if (null != info && System.currentTimeMillis() < info.getEndTime()) {
+                    //将获取到的秒杀数据封装到要返回给前端的对象中
+                    skuItemVo.setSeckillSkuVo(info);
+                }
+            }
+        }, threadPoolExecutor);
+
+
         //2、sku的图片信息    pms_sku_images(异步执行☆)
         CompletableFuture<Void> imagesFuture = CompletableFuture.runAsync(() -> {
             List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
@@ -145,7 +175,13 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
 
         //等到所有任务都完成(get方法会阻塞主线程)
-        CompletableFuture.allOf(/*skuInfoFuture,可以省略；因为后续的三个只有它完成才会执行 */saleFuture,descFuture,groupAttrFuture,imagesFuture).get();
+        CompletableFuture.allOf(
+                /*skuInfoFuture,可以省略；因为后续的三个只有它完成才会执行 */
+                saleFuture,
+                descFuture,
+                groupAttrFuture,
+                imagesFuture,
+                secKillInfoFuture).get();
         return skuItemVo;
     }
 

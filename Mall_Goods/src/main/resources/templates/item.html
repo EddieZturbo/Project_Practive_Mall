@@ -674,8 +674,8 @@
                     </div>
 
                     <div class="box-btns-two"
-                         th:if="${item.seckillSkuVo == null }">
-                        <a class="addToCart" href="http://cart.zhangjinhao.com/addToCart" th:attr="skuId=${item.info.skuId}">
+                         th:if="${item.seckillSkuVo == null || (#dates.createNow().getTime() < item.seckillSkuVo.startTime)}">
+                        <a class="addToCart" href="#" th:attr="skuId=${item.info.skuId}">
                             加入购物车
                         </a>
                     </div>

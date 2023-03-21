@@ -16,4 +16,20 @@ public interface SecKillService {
      * @return
      */
     List<SeckillSkuRedisTo> getCurrentSecKillSkus();
+
+    /**
+     * 根据skuId查询当前商品是否参加秒杀活动
+     * @param skuId
+     * @return
+     */
+    SeckillSkuRedisTo getSecKillInfoBySkuId(Long skuId);
+
+    /**
+     * 秒杀商品
+     * @param killId
+     * @param key
+     * @param num
+     * @return
+     */
+    String kill(String killId, String key, Integer num);
 }

@@ -1,6 +1,7 @@
 package com.eddie.mall_order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.eddie.common.to.mq.SeckillOrderTo;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.mall_order.entity.OrderEntity;
 import com.eddie.mall_order.vo.OrderConfirmVo;
@@ -28,5 +29,7 @@ public interface OrderService extends IService<OrderEntity> {
     void closeOrder(OrderEntity orderEntity);
 
     OrderEntity getOrderByOrderSn(String orderSn);
+
+    void createSeckillOrder(SeckillOrderTo orderTo);
 }
 

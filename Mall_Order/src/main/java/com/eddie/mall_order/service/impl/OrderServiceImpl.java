@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.eddie.common.constant.CartConstant;
 import com.eddie.common.exception.NoStockException;
 import com.eddie.common.to.OrderTo;
+import com.eddie.common.to.mq.SeckillOrderTo;
 import com.eddie.common.utils.PageUtils;
 import com.eddie.common.utils.Query;
 import com.eddie.common.utils.R;
@@ -292,6 +293,43 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderEntity orderEntity = this.baseMapper.selectOne(
                 new LambdaQueryWrapper<OrderEntity>().eq(OrderEntity::getOrderSn, orderSn));
         return orderEntity;
+    }
+
+    /**
+     * 生成秒杀订单
+     * @param orderTo
+     */
+    @Override
+    public void createSeckillOrder(SeckillOrderTo orderTo) {
+        //①保存订单信息
+        //准备对单对象
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setOrderSn(orderTo.getOrderSn());
+        orderEntity.setMemberId(orderTo.getMemberId());
+        orderEntity.setCreateTime(new Date());
+        BigDecimal totalPrice = orderTo.getSeckillPrice().multiply(new BigDecimal(orderTo.getNum().toString()));//计算总价 sku数量multiply单价
+        orderEntity.setPayAmount(totalPrice);
+        orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());//设置订单状态为新建状态
+
+        //保存订单对象到数据库中
+        this.save(orderEntity);
+
+        //②保存订单项信息
+        //准备订单项对象
+        OrderItemEntity orderItem = new OrderItemEntity();
+        orderItem.setOrderSn(orderTo.getOrderSn());
+        orderItem.setRealAmount(totalPrice);
+        orderItem.setSkuQuantity(orderTo.getNum());
+        //远程调用goods服务获取spu信息并封装到订单项对象中
+        R spuInfoBySkuId = goodsOpenFeign.getSpuInfoBySkuId(orderTo.getSkuId());
+        SpuInfoVo spuInfoVo = spuInfoBySkuId.getData("data", new TypeReference<SpuInfoVo>() {});
+        orderItem.setSpuId(spuInfoVo.getId());
+        orderItem.setSpuName(spuInfoVo.getSpuName());
+        orderItem.setSpuBrand(spuInfoVo.getBrandName());
+        orderItem.setCategoryId(spuInfoVo.getCatalogId());
+
+        //保存订单项数据到数据库中
+        orderItemService.save(orderItem);
     }
 
     /**

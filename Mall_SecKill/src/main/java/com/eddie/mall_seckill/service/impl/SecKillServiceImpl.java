@@ -64,11 +64,10 @@ public class SecKillServiceImpl implements SecKillService {
         if (lates3DaySession.getCode() == 0) {
             //远程调用成功
             //上架商品
-            List<SeckillSessionWithSkusVo> seckillSessionWithSkusVos = lates3DaySession.getData("data", new TypeReference<List<SeckillSessionWithSkusVo>>() {
-            });
+            List<SeckillSessionWithSkusVo> seckillSessionWithSkusVos = lates3DaySession.getData("data", new TypeReference<List<SeckillSessionWithSkusVo>>() {});
             //缓存到redis中
             if (null != seckillSessionWithSkusVos && seckillSessionWithSkusVos.size() > 0) {
-                //1）缓存活动信息(List数据类型进行储存)
+                //1）缓存秒杀活动信息(List数据类型进行储存)
                 saveSessionInfos(seckillSessionWithSkusVos);
                 //2）缓存活动相关联的商品信息(Hash数据类型进行储存)
                 saveSessionSkuInfo(seckillSessionWithSkusVos);

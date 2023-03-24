@@ -84,6 +84,23 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
+        <!-- sentinel 服务的流控 降级 -->
+        <!--
+        TODO 引入sentinel对服务进行流控和降级处理
+        ①引入spring-cloud-starter-alibaba-sentinel场景启动器
+        ②启动dashboard的jar包进行可视化监控和配置sentinel-dashboard-1.8.1.jar
+        ③每个服务中配置
+            sentinel:
+              transport:
+                #配置sentinel dashboard地址
+                dashboard: localhost:8333
+                #默认8719端口，假如被占用会自动从8719开始依次+1扫描，直至找到未被占用的端口
+        -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>

@@ -1,5 +1,6 @@
 package com.eddie.mall_seckill.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.eddie.common.utils.R;
 import com.eddie.mall_seckill.service.SecKillService;
 import com.eddie.mall_seckill.to.SeckillSkuRedisTo;

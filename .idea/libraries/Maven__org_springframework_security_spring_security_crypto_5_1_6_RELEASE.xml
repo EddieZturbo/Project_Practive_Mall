@@ -8,6 +8,7 @@
     </JAVADOC>
     <SOURCES>
       <root url="jar://E:/Maven3.6.3/apache-maven-3.6.3-bin/apache-maven-3.6.3/MyLocalRepository/org/springframework/security/spring-security-crypto/5.1.6.RELEASE/spring-security-crypto-5.1.6.RELEASE-sources.jar!/" />
+      <root url="file://E:/Maven3.6.3/apache-maven-3.6.3-bin/apache-maven-3.6.3/lib" />
     </SOURCES>
   </library>
 </component>

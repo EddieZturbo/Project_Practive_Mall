@@ -27,6 +27,7 @@ public enum BizCodeEnum {
     NO_STOCK_EXCEPTION(21000,"商品库存不足"),
     LOGINACCT_PASSWORD_EXCEPTION(15003,"账号或密码错误"),
     CURRENT_LIMITING_EXCEPTION(15222,"限流"),
+    REMOTE_CALL_FAILED(15244,"远程服务调用失败"),
     ;
 
     private Integer code;

@@ -53,6 +53,20 @@ public class StockReleaseListener {
         }
     }
 
+    /**
+     * 订单关闭了 收到订单服务发来的解锁库存的消息
+     * rabbitTemplate.convertAndSend("order-event-exchange","order.release.other",orderTo);
+     * return new Binding("stock.release.stock.queue",
+     *                 Binding.DestinationType.QUEUE,
+     *                 "order-event-exchange",
+     *                 "order.release.other.#",
+     *                 null);
+     * 进行库存的释放
+     * @param orderTo
+     * @param message
+     * @param channel
+     * @throws IOException
+     */
     @RabbitHandler
     public void handleOrderCloseRelease(OrderTo orderTo, Message message, Channel channel) throws IOException {
 

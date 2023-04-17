@@ -16,13 +16,10 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 public class SpringSessionConfig {
     @Bean
     public CookieSerializer cookieSerializer() {
-
         DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
-
         //放大作用域
         cookieSerializer.setDomainName("zhangjinhao.com");
         cookieSerializer.setCookieName("EddieSESSION");
-
         return cookieSerializer;
     }
 

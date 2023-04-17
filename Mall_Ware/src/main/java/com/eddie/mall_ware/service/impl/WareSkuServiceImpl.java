@@ -283,6 +283,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     }
 
     /**
+     * 订单关闭 进行库存解锁
      * 防止订单服务卡顿，导致订单状态消息一直改不了，库存优先到期，查订单状态新建，什么都不处理
      * 导致卡顿的订单，永远都不能解锁库存
      * @param orderTo

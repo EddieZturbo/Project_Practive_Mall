@@ -116,6 +116,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         wareSkuDao.appendStock(skuId, wareId, skuNum);
     }
 
+    /**
+     * 根据商品的skuId查看是否有库存
+     * @param skuIds
+     * @return
+     */
     @Override
     public List<SkuHasStockTo> skuHasStock(List<Long> skuIds) {
         List<SkuHasStockTo> skuHasStockVos = skuIds.stream()

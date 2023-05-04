@@ -57,18 +57,19 @@ public class MyRabbitConfig {
     public void initRabbitTemplate() {
 
         /**
+         * 设置确认回调
          * 1、只要消息抵达Broker就ack=true
          * correlationData：当前消息的唯一关联数据(这个是消息的唯一id)
          * ack：消息是否成功收到
          * cause：失败的原因
          */
-        //设置确认回调
         rabbitTemplate.setConfirmCallback((correlationData,ack,cause) -> {
             System.out.println("confirm...correlationData["+correlationData+"]==>ack:["+ack+"]==>cause:["+cause+"]");
         });
 
 
         /**
+         * 设置投递到指定队列的失败回调
          * 只要消息没有投递给指定的队列，就触发这个失败回调
          * message：投递失败的消息详细信息
          * replyCode：回复的状态码

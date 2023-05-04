@@ -210,7 +210,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                 saveOrder(order);
 
                 //4、库存锁定,只要有异常，回滚订单数据
-                WareSkuLockVo lockVo = new WareSkuLockVo();//锁库存单号的对象
+                WareSkuLockVo lockVo = new WareSkuLockVo();//准备锁库存单号的对象
                 lockVo.setOrderSn(order.getOrder().getOrderSn());
 
                 //获取出要锁定的商品数据信息(从订单中获取商品项)
@@ -270,13 +270,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
                         OrderEntity::getOrderSn
                         , orderEntity.getOrderSn()));
         if(orderInfo.getStatus().equals(OrderStatusEnum.CREATE_NEW.getCode())){
-            //待付款状态 要进行关闭订单操作
+            //新建订单状态（表明订单超时未支付） 要进行关闭订单操作
+
+            //修改订单状态
             OrderEntity orderUpdate = new OrderEntity();
             orderUpdate.setId(orderInfo.getId());
-            orderUpdate.setStatus(OrderStatusEnum.CANCLED.getCode());
+            orderUpdate.setStatus(OrderStatusEnum.CANCLED.getCode());//将订单状态设置为cancel状态
             this.updateById(orderUpdate);
 
-            //发送消息给mq进行关单操作
+            //发送消息给mq进行关单操作（释放库存，回退优惠积分等操作）
             OrderTo orderTo = new OrderTo();
             BeanUtils.copyProperties(orderInfo, orderTo);
             try {

@@ -25,7 +25,7 @@ public class CartController {
     CartService cartService;
 
     /**
-     * 获取当前用户的购物车的所有的购物项
+     * 查询当前用户购物车中选中的购物项（进行订单确认结算时所需数据）
      * @return
      */
     @RequestMapping("/currentUserCartItems")
@@ -35,6 +35,13 @@ public class CartController {
         return cartItemVoList;
     }
 
+    /**
+     * 获取购物车所有数据
+     * @param model
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @GetMapping("/cartList")
     public String cart(Model model) throws ExecutionException, InterruptedException {
         CartVo cartVo = cartService.getCart();

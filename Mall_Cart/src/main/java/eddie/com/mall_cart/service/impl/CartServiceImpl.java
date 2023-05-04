@@ -234,6 +234,10 @@ public class CartServiceImpl implements CartService {
         cartOps.put(skuId.toString(), jsonString);
     }
 
+    /**
+     * 查询当前用户购物车中选中的购物项（进行订单确认结算时所需数据）
+     * @return
+     */
     @Override
     public List<CartItemVo> getUserCartItems() {
         List<CartItemVo> cartItemVoList;
@@ -243,6 +247,7 @@ public class CartServiceImpl implements CartService {
             return null;
         } else {
             String cartKey = CART_PREFIX + userInfoTo.getUserId();//登录用户的购物车cartKey
+            //根据登录用户的key获取redis中储存的购物车所有的数据项
             List<CartItemVo> cartItems = getCartItems(cartKey);
             if (null == cartItems) {//查询没有数据 抛出异常
                 throw new CartExceptionHandler();
@@ -252,11 +257,11 @@ public class CartServiceImpl implements CartService {
                         .filter((item) -> {
                             return item.getCheck();/*进行filter只留下check为true的 即勾选中的*/
                         })
-                        .map((item) -> {
+                        .map((item) -> {//远程调用goods服务查询当前商品的最新价格数据 确保结算时使用的是最新的价格
                             BigDecimal price = goodsOpenFeign.getPriceBySkuId(item.getSkuId());
                             item.setPrice(price);
                             return item;
-                        })//远程调用goods服务查询当前商品的最新价格数据 确保结算时使用的是最新的价格
+                        })
                         .collect(Collectors.toList());
             }
             return cartItemVoList;

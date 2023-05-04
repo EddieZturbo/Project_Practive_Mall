@@ -9,6 +9,9 @@ import java.util.List;
  @create 2023-03-17 9:19 AM
  */
 public interface SecKillService {
+    /**
+     * 定期扫描最近三天需要进行秒杀的商品并进行上架
+     */
     void uploadSeckillSkuLatest3Days();
 
     /**

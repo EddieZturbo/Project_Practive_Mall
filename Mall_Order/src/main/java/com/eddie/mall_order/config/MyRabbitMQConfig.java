@@ -1,9 +1,6 @@
 package com.eddie.mall_order.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Exchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +14,7 @@ public class MyRabbitMQConfig {
     /* 容器中的Queue、Exchange、Binding 会自动创建（在RabbitMQ）不存在的情况下 */
 
     /**
-     * 死信队列
+     * 死信队列（延迟队列）
      *
      * @return
      */@Bean
@@ -32,7 +29,7 @@ public class MyRabbitMQConfig {
         HashMap<String, Object> arguments = new HashMap<>();
         arguments.put("x-dead-letter-exchange", "order-event-exchange");
         arguments.put("x-dead-letter-routing-key", "order.release.order");
-        arguments.put("x-message-ttl", 60000); // 消息过期时间 1分钟
+        arguments.put("x-message-ttl", 60000); // 整个延迟队列的消息过期时间 为1分钟
         Queue queue = new Queue("order.delay.queue", true, false, false, arguments);
 
         return queue;
@@ -52,7 +49,7 @@ public class MyRabbitMQConfig {
     }
 
     /**
-     * TopicExchange
+     * 订单交换机（控制订单的延迟，释放，库存，秒杀等队列的核心交换机）
      *
      * @return
      */
@@ -69,6 +66,10 @@ public class MyRabbitMQConfig {
     }
 
 
+    /**
+     * 延迟队列和订单交换机进行绑定
+     * @return
+     */
     @Bean
     public Binding orderCreateBinding() {
         /*
@@ -85,6 +86,10 @@ public class MyRabbitMQConfig {
                 null);
     }
 
+    /**
+     * 释放（解除）订单的队列与订单交换机进行绑定
+     * @return
+     */
     @Bean
     public Binding orderReleaseBinding() {
 
@@ -96,7 +101,7 @@ public class MyRabbitMQConfig {
     }
 
     /**
-     * 订单释放直接和库存释放进行绑定
+     * 库存释放的队列与订单交换机进行绑定
      * @return
      */
     @Bean
@@ -120,6 +125,10 @@ public class MyRabbitMQConfig {
         return queue;
     }
 
+    /**
+     * 秒杀订单的队列和订单交换机进行绑定
+     * @return
+     */
     @Bean
     public Binding orderSecKillOrrderQueueBinding() {
         //String destination, DestinationType destinationType, String exchange, String routingKey,
